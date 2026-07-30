@@ -27,7 +27,27 @@ const DB_PATH   = process.env.DB_PATH || path.join(DIR, 'vamonos.db');
    Un joueur = un pseudo + un identifiant tiré au hasard côté navigateur.
    Aucun compte, aucun mot de passe, aucune adresse e-mail : le minimum pour
    distinguer deux personnes et suivre leurs parties. */
-const db = new DatabaseSync(DB_PATH);
+/* Le chemin de la base peut pointer vers un volume qui n'existe pas encore
+   (Railway, Render : le disque se monte séparément). Plutôt que de mourir au
+   démarrage — et de renvoyer un 502 au visiteur — on crée le dossier, et si
+   c'est impossible on se rabat sur le disque local. Le jeu passe avant la
+   télémétrie : mieux vaut des statistiques éphémères qu'un site en panne. */
+function ouvrirBase(chemin){
+  try {
+    fs.mkdirSync(path.dirname(chemin), { recursive: true });
+    return new DatabaseSync(chemin);
+  } catch (e){
+    const secours = path.join(DIR, 'vamonos.db');
+    console.warn('Base indisponible sur ' + chemin + ' (' + e.message + ')');
+    console.warn('→ repli sur ' + secours + '. Montez un volume pour conserver les données.');
+    try { return new DatabaseSync(secours); }
+    catch (e2){
+      console.warn('→ base en mémoire : les statistiques ne seront pas conservées.');
+      return new DatabaseSync(':memory:');
+    }
+  }
+}
+const db = ouvrirBase(DB_PATH);
 db.exec(`
   PRAGMA journal_mode = WAL;
   CREATE TABLE IF NOT EXISTS joueurs (
