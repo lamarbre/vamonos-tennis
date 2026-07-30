@@ -11,15 +11,17 @@ const { DatabaseSync } = require('node:sqlite');
 
 const DIR   = __dirname;
 const PORT  = Number(process.argv[2] || process.env.PORT) || 8124;
-/* En production, le mot de passe DOIT venir de l'environnement. Un mot de passe
-   par défaut sur un site public équivaut à pas de mot de passe du tout : on refuse
-   de démarrer plutôt que d'exposer le tableau de bord sans le dire. */
+/* Le mot de passe d'administration vient de l'environnement. S'il manque en
+   production, on NE refuse PAS de démarrer — le jeu n'a pas à tomber parce qu'un
+   tableau de bord n'est pas configuré. On désactive seulement /admin, et on le dit
+   dans les logs. Un mot de passe par défaut sur un dépôt public n'en est pas un :
+   pas de repli silencieux, pas de porte ouverte. */
 const PROD = !!(process.env.PORT || process.env.NODE_ENV === 'production');
 const ADMIN_MDP = process.env.ADMIN_MDP || (PROD ? null : 'vamonos2026');
 if (!ADMIN_MDP){
-  console.error('\n  ERREUR : définissez ADMIN_MDP avant de démarrer en production.');
-  console.error('  Exemple :  ADMIN_MDP="un-mot-de-passe-long" node serveur.js\n');
-  process.exit(1);
+  console.warn('\n  ADMIN_MDP absent : le tableau de bord /admin est DÉSACTIVÉ.');
+  console.warn('  Le jeu, lui, fonctionne normalement et la télémétrie est collectée.');
+  console.warn('  Pour activer /admin : ajoutez la variable ADMIN_MDP puis redéployez.\n');
 }
 const DB_PATH   = process.env.DB_PATH || path.join(DIR, 'vamonos.db');
 
@@ -309,6 +311,7 @@ const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; chars
   '.txt':'text/plain; charset=utf-8' };
 
 function autorise(req){
+  if (!ADMIN_MDP) return false;          // tableau de bord non configuré : accès fermé
   const h = req.headers.authorization || '';
   if (!h.startsWith('Basic ')) return false;
   const [, mdp] = Buffer.from(h.slice(6), 'base64').toString().split(':');
@@ -333,6 +336,12 @@ http.createServer((req, res) => {
   }
 
   if (url === '/admin' || url === '/admin/'){
+    if (!ADMIN_MDP){
+      res.writeHead(503, { 'Content-Type':'text/plain; charset=utf-8' });
+      return res.end('Tableau de bord non configuré.\n\n'
+        + 'Ajoutez la variable d\'environnement ADMIN_MDP puis redéployez.\n'
+        + 'Le jeu, lui, fonctionne : les statistiques sont bien collectées en attendant.');
+    }
     if (!autorise(req)){
       res.writeHead(401, { 'WWW-Authenticate':'Basic realm="Vamonos Tennis"' });
       return res.end('Accès réservé');
