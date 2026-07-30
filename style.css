@@ -1,0 +1,576 @@
+/* ══════════════════════════════════════════════════════════
+   VAMONOS TENNIS — feuille de style
+   Mobile-first. Aucune dépendance externe : polices système,
+   pour que la page s'affiche instantanément même hors ligne.
+   ══════════════════════════════════════════════════════════ */
+
+:root{
+  /* Fond : bleu nuit très sombre, ambiance session de soirée */
+  --bg:#0B141C;
+  --bg2:#111E29;
+  --card:#16242F;
+  --card2:#1D3040;
+  --line:#274054;
+
+  --txt:#EAF2F7;
+  --txt2:#93A9BA;
+  --txt3:#63798B;
+
+  /* Surfaces du circuit — la palette du jeu */
+  --clay:#D6673A;
+  --hard:#2E7BE6;
+  --grass:#43A65A;
+  --gold:#EFC050;
+
+  --good:#3FBE7C;
+  --bad:#E0574B;
+  --warn:#E8A33D;
+
+  --radius:14px;
+  --disp:"Oswald","Arial Narrow","Haettenschweiler",Impact,system-ui,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt);font-family:var(--body);
+  font-size:16px;line-height:1.5;overscroll-behavior:none}
+body{
+  background-image:
+    radial-gradient(900px 500px at 50% -10%, rgba(46,123,230,.16), transparent 60%),
+    radial-gradient(700px 400px at 100% 100%, rgba(214,103,58,.10), transparent 60%);
+  background-attachment:fixed;
+  min-height:100dvh;
+}
+#app{max-width:520px;margin:0 auto;padding:16px 14px 40px;min-height:100dvh}
+
+.screen{display:none;animation:fade .28s ease}
+.screen.active{display:block}
+.hidden{display:none !important}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+
+/* ─────────── Boutons ─────────── */
+.btn{
+  display:block;width:100%;border:0;cursor:pointer;
+  font-family:var(--disp);font-size:17px;letter-spacing:.06em;text-transform:uppercase;
+  padding:15px 16px;border-radius:var(--radius);margin-bottom:10px;
+  transition:transform .12s ease, filter .12s ease;
+}
+.btn:active{transform:scale(.985);filter:brightness(1.1)}
+.btn-primary{background:linear-gradient(135deg,var(--hard),#1A54AC);color:#fff;
+  box-shadow:0 8px 24px rgba(46,123,230,.28)}
+.btn-accent{background:linear-gradient(135deg,var(--clay),#A8461F);color:#fff;
+  box-shadow:0 8px 24px rgba(214,103,58,.24)}
+.btn-ghost{background:var(--card);color:var(--txt2);border:1px solid var(--line);
+  font-size:14px;padding:12px 10px}
+.btn-back{background:none;border:0;color:var(--txt3);font-size:14px;
+  padding:6px 0 14px;cursor:pointer;font-family:var(--body)}
+.home-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.home-row .btn{margin:0}
+
+/* ─────────── Accueil ─────────── */
+.home-hero{text-align:center;padding:26px 0 22px}
+.home-logo{
+  font-family:var(--disp);font-size:52px;line-height:.92;letter-spacing:.02em;
+  font-weight:700;
+}
+.home-logo span{display:block;color:var(--clay)}
+.home-tag{color:var(--txt2);font-size:14.5px;margin-top:14px}
+.home-tag b{color:var(--txt)}
+.home-meta{text-align:center;color:var(--txt3);font-size:12px;margin-top:22px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;margin-bottom:12px}
+.panel-h{font-family:var(--disp);font-size:13px;letter-spacing:.14em;color:var(--txt3);
+  margin-bottom:8px}
+.panel-b{font-size:14px;color:var(--txt2);margin-bottom:12px}
+.panel-b b{color:var(--txt)}
+
+/* ─────────── Écrans de choix ─────────── */
+.pick-title{font-family:var(--disp);font-size:26px;letter-spacing:.05em;margin-bottom:4px}
+.pick-sub{color:var(--txt2);font-size:14px;margin-bottom:18px}
+.pick-list{display:flex;flex-direction:column;gap:10px}
+
+.opt{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;cursor:pointer;text-align:left;width:100%;color:var(--txt);
+  transition:border-color .15s ease, transform .12s ease, background .15s ease;
+  animation:pop .25s ease backwards;
+}
+.opt:active{transform:scale(.99)}
+.opt:hover{border-color:var(--hard);background:var(--card2)}
+.opt-name{font-family:var(--disp);font-size:18px;letter-spacing:.03em;display:flex;
+  align-items:center;gap:8px}
+.opt-desc{color:var(--txt2);font-size:13.5px;margin-top:5px}
+.opt-fx{color:var(--txt3);font-size:12px;margin-top:7px;font-variant-numeric:tabular-nums}
+.opt-tag{display:inline-block;background:var(--clay);color:#fff;font-family:var(--disp);
+  font-size:11px;letter-spacing:.1em;padding:2px 7px;border-radius:5px;margin-right:7px;
+  vertical-align:middle}
+.opt-tag.safe{background:#3B5468}
+.opt-tag.gold{background:var(--gold);color:#2A1E00}
+
+/* Grille des nations */
+.grid-nat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid-nat .opt{padding:12px 6px;text-align:center}
+.grid-nat .opt-name{display:block;font-size:14px}
+.grid-nat .flag{font-size:26px;display:block;margin-bottom:3px}
+
+/* ─────────── HUD ─────────── */
+.hud{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;margin-bottom:14px;position:sticky;top:8px;z-index:5;
+  backdrop-filter:blur(8px)}
+.hud-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.hh-name{font-family:var(--disp);font-size:19px;letter-spacing:.03em}
+.hh-age{color:var(--txt3);font-size:12.5px}
+.hud-btn{background:var(--card2);border:1px solid var(--line);color:var(--txt2);
+  width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:15px;flex:none}
+
+.hud-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.hud-stat{background:var(--bg2);border-radius:9px;padding:6px 4px;text-align:center}
+.hs-k{display:block;font-size:9px;letter-spacing:.1em;color:var(--txt3)}
+.hs-v{display:block;font-family:var(--disp);font-size:17px;font-variant-numeric:tabular-nums}
+
+.gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.gauge span{font-size:9px;letter-spacing:.1em;color:var(--txt3);display:block;margin-bottom:3px}
+.gbar{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.gfill{height:100%;width:50%;border-radius:3px;transition:width .5s ease, background .4s ease}
+
+.age-track{height:3px;background:var(--bg2);border-radius:2px;margin-top:10px;overflow:hidden}
+#age-fill{height:100%;background:linear-gradient(90deg,var(--grass),var(--gold),var(--clay));
+  width:0%;transition:width .6s ease}
+
+.profile{margin-top:11px;border-top:1px solid var(--line);padding-top:11px}
+.pbar{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px}
+.pbar b{width:82px;color:var(--txt2);font-weight:400;flex:none}
+.pbar .track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.pbar .fill{height:100%;background:var(--hard);border-radius:3px}
+.pbar i{width:26px;text-align:right;font-style:normal;color:var(--txt);
+  font-variant-numeric:tabular-nums}
+.surf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:9px 0}
+.surf{background:var(--bg2);border-radius:8px;padding:6px;text-align:center;font-size:11px}
+.surf b{display:block;font-family:var(--disp);font-size:15px}
+.surf.clay b{color:var(--clay)} .surf.hard b{color:var(--hard)} .surf.grass b{color:var(--grass)}
+.p-meta{color:var(--txt3);font-size:12px;margin-top:8px}
+.traits{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.trait{background:var(--card2);border:1px solid var(--line);border-radius:20px;
+  padding:3px 9px;font-size:11.5px;color:var(--txt2)}
+
+/* ─────────── Cartes de jeu ─────────── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;animation:pop .3s ease}
+.card-cat{font-family:var(--disp);font-size:12.5px;letter-spacing:.14em;color:var(--clay);
+  margin-bottom:10px}
+.card-txt{font-size:15.5px;line-height:1.62;color:var(--txt)}
+.card-txt em{color:var(--gold);font-style:normal}
+.card-opts{margin-top:18px;display:flex;flex-direction:column;gap:9px}
+
+.fx-list{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.fx{font-size:12.5px;padding:3px 9px;border-radius:20px;font-variant-numeric:tabular-nums}
+.fx.up{background:rgba(63,190,124,.14);color:var(--good)}
+.fx.down{background:rgba(224,87,75,.14);color:var(--bad)}
+.fx.neutral{background:var(--card2);color:var(--txt2)}
+
+/* Rapport de saison */
+.season-h{font-family:var(--disp);font-size:12.5px;letter-spacing:.14em;color:var(--txt3);
+  margin-bottom:4px}
+.season-t{font-family:var(--disp);font-size:23px;letter-spacing:.03em;margin-bottom:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}
+.sg{background:var(--bg2);border-radius:9px;padding:9px 4px;text-align:center}
+.sg b{display:block;font-family:var(--disp);font-size:20px;line-height:1.1}
+.sg span{font-size:9.5px;color:var(--txt3);letter-spacing:.06em}
+.rank-move{font-family:var(--disp);font-size:15px;margin:6px 0 2px}
+.rank-move .up{color:var(--good)} .rank-move .down{color:var(--bad)}
+
+.res-line{display:flex;gap:8px;align-items:baseline;font-size:13.5px;padding:5px 0;
+  border-bottom:1px solid rgba(39,64,84,.5)}
+.res-line:last-child{border:0}
+.res-line .rl-t{flex:1;color:var(--txt2)}
+.res-line .rl-r{font-family:var(--disp);font-size:14px;letter-spacing:.04em}
+.rl-r.win{color:var(--gold)} .rl-r.deep{color:var(--good)} .rl-r.out{color:var(--txt3)}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;align-self:center}
+.dot.clay{background:var(--clay)} .dot.hard{background:var(--hard)} .dot.grass{background:var(--grass)}
+
+.news{margin-top:13px;font-size:13px;color:var(--txt2);display:flex;flex-direction:column;gap:6px}
+.news div{background:var(--bg2);border-radius:9px;padding:8px 10px}
+
+/* Moment clé */
+.moment{background:linear-gradient(160deg,#2A1810,#16242F);border-color:var(--clay)}
+.moment .card-cat{color:var(--gold)}
+.moment-title{font-family:var(--disp);font-size:25px;letter-spacing:.04em;
+  color:var(--gold);margin-bottom:10px;line-height:1.1}
+.chance{float:right;font-family:var(--disp);font-size:13px;color:var(--txt3)}
+
+/* ─────────── Écran final ─────────── */
+.final-hero{text-align:center;padding:24px 16px;border-radius:var(--radius);
+  background:linear-gradient(165deg,var(--card2),var(--card));border:1px solid var(--line);
+  margin-bottom:14px}
+.final-tier{font-family:var(--disp);font-size:13px;letter-spacing:.18em;color:var(--gold)}
+.final-name{font-family:var(--disp);font-size:32px;line-height:1.05;margin:6px 0}
+.final-sub{color:var(--txt2);font-size:13.5px}
+.final-score{font-family:var(--disp);font-size:56px;line-height:1;margin:12px 0 2px;
+  background:linear-gradient(120deg,var(--gold),var(--clay));-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.final-pct{color:var(--txt2);font-size:13px}
+
+.block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:15px;margin-bottom:12px}
+.block-h{font-family:var(--disp);font-size:12.5px;letter-spacing:.14em;color:var(--txt3);
+  margin-bottom:10px}
+.pal-line{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;
+  border-bottom:1px solid rgba(39,64,84,.5)}
+.pal-line:last-child{border:0}
+.pal-line b{font-family:var(--disp);font-size:16px}
+.pal-line.big b{color:var(--gold)}
+
+.h2h{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center;
+  text-align:center}
+.h2h-side b{display:block;font-family:var(--disp);font-size:17px}
+.h2h-side span{font-size:11.5px;color:var(--txt3)}
+.h2h-mid{font-family:var(--disp);font-size:24px;color:var(--gold)}
+
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:11px;
+  padding:11px 6px;text-align:center}
+.badge.locked{opacity:.36}
+.badge .bi{font-size:24px;display:block}
+.badge .bn{font-family:var(--disp);font-size:12px;letter-spacing:.03em;margin-top:3px}
+.badge .bd{font-size:10.5px;color:var(--txt3);margin-top:2px;line-height:1.3}
+
+.timeline{font-size:13px}
+.tl{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:6px 0;
+  border-bottom:1px solid rgba(39,64,84,.5);align-items:baseline}
+.tl:last-child{border:0}
+.tl .tl-a{font-family:var(--disp);color:var(--txt3)}
+.tl .tl-r{font-family:var(--disp);color:var(--txt2)}
+
+.empty{color:var(--txt3);font-size:13.5px;text-align:center;padding:24px 0}
+
+@media(min-width:560px){
+  .home-logo{font-size:62px}
+  .grid-nat{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ══════════════════════════════════════════════════════════
+   v2 — barre supérieure, onglets, semaine, match
+   ══════════════════════════════════════════════════════════ */
+
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:11px 13px;margin-bottom:8px}
+.tb-name{font-family:var(--disp);font-size:19px;letter-spacing:.03em;line-height:1.1}
+.tb-sub{color:var(--txt3);font-size:12px;margin-top:2px}
+.tb-right{text-align:right;flex:none}
+.tb-rank{font-family:var(--disp);font-size:23px;line-height:1;color:var(--gold)}
+.tb-money{font-size:12px;color:var(--txt2);font-variant-numeric:tabular-nums}
+.tb-money.neg{color:var(--bad)}
+
+.minibars{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.mb span{display:block;font-size:8.5px;letter-spacing:.11em;color:var(--txt3);margin-bottom:3px}
+.mbar{height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.mbar>div{height:100%;border-radius:2px;transition:width .4s ease,background .4s ease}
+
+.tabs{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;
+  background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:4px;
+  margin-top:14px;backdrop-filter:blur(10px);z-index:9}
+.tab{background:none;border:0;color:var(--txt3);cursor:pointer;padding:6px 1px;
+  border-radius:8px;font-size:17px;line-height:1.15}
+.tab span{display:block;font-size:8.5px;letter-spacing:.02em;margin-top:1px}
+.tab.active{background:var(--card2);color:var(--txt)}
+
+/* ── Semaine ── */
+.week-hero{background:linear-gradient(160deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);padding:15px;margin-bottom:11px}
+.week-when{font-family:var(--disp);font-size:12px;letter-spacing:.15em;color:var(--txt3)}
+.week-what{font-family:var(--disp);font-size:24px;line-height:1.12;margin:5px 0 3px}
+.week-why{color:var(--txt2);font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:var(--bg2);border:1px solid var(--line);border-radius:20px;
+  padding:3px 10px;font-size:11.5px;color:var(--txt2)}
+.chip.clay{border-color:var(--clay);color:var(--clay)}
+.chip.hard{border-color:var(--hard);color:var(--hard)}
+.chip.grass{border-color:var(--grass);color:var(--grass)}
+.chip.warn{border-color:var(--warn);color:var(--warn)}
+.chip.bad{border-color:var(--bad);color:var(--bad)}
+.chip.good{border-color:var(--good);color:var(--good)}
+
+.row{display:flex;justify-content:space-between;align-items:center;gap:9px;
+  padding:9px 0;border-bottom:1px solid rgba(39,64,84,.55);font-size:13.5px}
+.row:last-child{border:0}
+.row .r-main{flex:1;min-width:0}
+.row .r-t{font-weight:500}
+.row .r-s{color:var(--txt3);font-size:11.5px;margin-top:1px}
+.row .r-v{font-family:var(--disp);font-size:15px;flex:none;text-align:right}
+
+.pick-row{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:11px;padding:11px 12px;margin-bottom:7px;cursor:pointer;color:var(--txt);
+  display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pick-row:hover{border-color:var(--hard);background:var(--card2)}
+.pick-row.sel{border-color:var(--gold)}
+.pick-row .pr-t{display:block;font-family:var(--disp);font-size:15.5px;letter-spacing:.02em}
+.pick-row .pr-d{display:block;color:var(--txt2);font-size:12.5px;margin-top:2px;line-height:1.4}
+.pick-row .pr-r{flex:none;text-align:right;font-size:11.5px;color:var(--txt3)}
+
+/* ── Tableau de tournoi ── */
+.draw-line{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;
+  padding:7px 0;border-bottom:1px solid rgba(39,64,84,.5);font-size:13px}
+.draw-line:last-child{border:0}
+.draw-line .dl-r{font-family:var(--disp);font-size:11px;color:var(--txt3);width:74px}
+.draw-line.me{background:rgba(239,192,80,.07);border-radius:7px;padding-left:6px;padding-right:6px}
+.draw-line .dl-w{color:var(--good)} .draw-line .dl-l{color:var(--bad)}
+.seed{font-size:10px;color:var(--txt3);margin-left:4px}
+
+/* ── Match ── */
+#sc-match{display:none}
+#sc-match.active{display:flex;flex-direction:column;min-height:100dvh}
+.mh{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;margin-bottom:9px}
+.mh-top{font-family:var(--disp);font-size:11.5px;letter-spacing:.14em;color:var(--txt3)}
+.mh-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;
+  text-align:center;margin-top:8px}
+.mh-p b{display:block;font-family:var(--disp);font-size:16px;line-height:1.15}
+.mh-p span{font-size:11px;color:var(--txt3)}
+.mh-mid{font-family:var(--disp);color:var(--txt3);font-size:13px}
+
+.board{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;margin-bottom:9px;font-variant-numeric:tabular-nums}
+.bl{display:grid;grid-template-columns:1fr repeat(6,26px);gap:2px;align-items:center;
+  font-size:14px;padding:3px 0}
+.bl b{font-family:var(--disp);font-size:15px;text-align:center}
+.bl .nm{text-align:left;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bl.serving .nm::before{content:'●';color:var(--gold);font-size:9px;margin-right:5px;vertical-align:middle}
+.bl .cur{color:var(--gold)}
+
+.feed{flex:1;overflow-y:auto;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:11px;font-size:13.5px;min-height:180px;max-height:44vh}
+.fl{padding:5px 0;border-bottom:1px solid rgba(39,64,84,.4);display:flex;
+  justify-content:space-between;gap:9px;animation:fade .2s ease}
+.fl:last-child{border:0}
+.fl.break{color:var(--gold);font-weight:500}
+.fl.set{color:var(--txt);font-family:var(--disp);letter-spacing:.03em;font-size:14px;
+  border-top:1px solid var(--line);margin-top:4px;padding-top:7px}
+.fl.end{color:var(--good);font-family:var(--disp);font-size:16px}
+.fl .fs{color:var(--txt3);font-variant-numeric:tabular-nums;flex:none}
+.fl .note{display:block;color:var(--txt3);font-size:11.5px;font-style:italic;margin-top:2px}
+
+.match-ctrl{margin-top:10px}
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ctrl-row .btn{margin:0}
+
+.stat-cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;font-size:12.5px;
+  align-items:center;padding:4px 0}
+.stat-cmp .sc-l{text-align:right} .stat-cmp .sc-r{text-align:left}
+.stat-cmp .sc-k{color:var(--txt3);font-size:10.5px;letter-spacing:.05em;text-align:center;width:96px}
+
+/* ── Corps ── */
+.body-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.bp{background:var(--bg2);border-radius:9px;padding:8px 10px;font-size:12.5px}
+.bp-t{display:flex;justify-content:space-between;margin-bottom:4px}
+.bp-bar{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.bp-bar>div{height:100%;border-radius:2px}
+
+.inbox-item{background:var(--card);border:1px solid var(--line);border-left-width:3px;
+  border-radius:10px;padding:10px 12px;margin-bottom:7px}
+.inbox-item.good{border-left-color:var(--good)}
+.inbox-item.bad{border-left-color:var(--bad)}
+.inbox-item.info{border-left-color:var(--hard)}
+.inbox-item .it{font-family:var(--disp);font-size:14.5px;letter-spacing:.02em}
+.inbox-item .ib{color:var(--txt2);font-size:12.5px;margin-top:3px;line-height:1.5}
+.inbox-item .iw{color:var(--txt3);font-size:10.5px;margin-top:4px}
+
+.sec{font-family:var(--disp);font-size:12px;letter-spacing:.14em;color:var(--txt3);
+  margin:16px 0 8px}
+.sec:first-child{margin-top:0}
+
+/* Pastille de code pays, utilisee quand le systeme n'affiche pas les drapeaux */
+.natcode{
+  display:inline-block;background:var(--card2);border:1px solid var(--line);
+  color:var(--txt2);font-family:var(--disp);font-size:.72em;letter-spacing:.06em;
+  padding:0 5px;border-radius:4px;vertical-align:1px;line-height:1.5;
+}
+.grid-nat .natcode{font-size:14px;padding:2px 8px;margin-bottom:4px}
+.tb-name .natcode,.mh-p .natcode{font-size:.6em}
+
+/* ─────────── Fiche adversaire ─────────── */
+.scgrid{display:flex;justify-content:space-between;margin-bottom:4px}
+.sc-head{font-size:9.5px;letter-spacing:.12em;color:var(--txt3)}
+.scrow{display:grid;grid-template-columns:86px 1fr 24px 6px 24px 1fr;gap:4px;
+  align-items:center;padding:2px 0;font-size:11.5px}
+.sc-n{color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-b{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;
+  display:flex;justify-content:flex-end}
+.sc-b i{background:var(--hard);height:100%;border-radius:3px}
+.sc-b.him{justify-content:flex-start}
+.sc-b.him i{background:var(--txt3)}
+.sc-v{font-family:var(--disp);font-size:12.5px;text-align:center;font-variant-numeric:tabular-nums}
+.sc-vs{color:var(--txt3);font-size:10px;text-align:center}
+.scnotes{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.scnote{font-size:12.5px;color:var(--txt2);padding-left:15px;position:relative;line-height:1.45}
+.scnote::before{content:'•';position:absolute;left:2px;color:var(--txt3)}
+.scnote.good::before{content:'▲';color:var(--good);font-size:9px;top:2px}
+.scnote.bad::before{content:'▼';color:var(--bad);font-size:9px;top:2px}
+.pick-row.reco{box-shadow:inset 3px 0 0 var(--gold)}
+.fl.moment-win{color:var(--good);font-weight:500}
+.fl.moment-lose{color:var(--bad);font-weight:500}
+
+/* ─────────── Onglet Progrès ─────────── */
+.tabs{grid-template-columns:repeat(7,1fr)}
+.tab{font-size:15px}
+.tab span{font-size:7.8px;letter-spacing:0}
+
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart-x{display:flex;justify-content:space-between;font-size:10.5px;
+  color:var(--txt3);margin-top:5px}
+
+.attrow{display:grid;grid-template-columns:92px 1fr 26px 30px;gap:6px;
+  align-items:center;padding:3px 0;font-size:11.5px}
+.at-n{color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-bar{position:relative;height:7px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.at-bar i{position:absolute;left:0;top:0;height:100%;border-radius:4px}
+.at-old{background:var(--line)}
+.at-new{background:linear-gradient(90deg,var(--hard),var(--gold));opacity:.9}
+.at-v{font-family:var(--disp);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.at-d{font-size:11px;text-align:right;font-variant-numeric:tabular-nums}
+
+.recrow{display:grid;grid-template-columns:86px 1fr 46px 34px;gap:7px;
+  align-items:center;padding:4px 0;font-size:12px}
+.rec-n{color:var(--txt2)}
+.rec-bar{height:7px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.rec-bar i{display:block;height:100%;border-radius:4px}
+.rec-v{font-family:var(--disp);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+.rec-p{font-size:11px;color:var(--txt3);text-align:right}
+
+/* ═══════════ Identité visuelle : les surfaces ═══════════
+   La couleur de la surface prend possession de l'écran quand on joue. */
+body[data-surf]{ transition: background-image .5s ease; }
+body[data-surf="clay"]{
+  background-image:
+    radial-gradient(900px 520px at 50% -8%, rgba(214,103,58,.38), transparent 62%),
+    radial-gradient(700px 420px at 100% 100%, rgba(214,103,58,.20), transparent 60%);
+}
+body[data-surf="hard"]{
+  background-image:
+    radial-gradient(900px 520px at 50% -8%, rgba(46,123,230,.36), transparent 62%),
+    radial-gradient(700px 420px at 100% 100%, rgba(46,123,230,.19), transparent 60%);
+}
+body[data-surf="grass"]{
+  background-image:
+    radial-gradient(900px 520px at 50% -8%, rgba(67,166,90,.38), transparent 62%),
+    radial-gradient(700px 420px at 100% 100%, rgba(67,166,90,.20), transparent 60%);
+}
+
+/* Le bandeau du match et du tournoi porte la couleur du jour */
+.mh.surf-clay,  .week-hero.surf-clay { border-color:rgba(214,103,58,.55); }
+.mh.surf-hard,  .week-hero.surf-hard { border-color:rgba(46,123,230,.55); }
+.mh.surf-grass, .week-hero.surf-grass{ border-color:rgba(67,166,90,.55); }
+.mh.surf-clay::before,.mh.surf-hard::before,.mh.surf-grass::before,
+.week-hero.surf-clay::before,.week-hero.surf-hard::before,.week-hero.surf-grass::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:3px;border-radius:14px 14px 0 0;
+}
+.mh.surf-clay::before,.week-hero.surf-clay::before  { background:var(--clay); }
+.mh.surf-hard::before,.week-hero.surf-hard::before  { background:var(--hard); }
+.mh.surf-grass::before,.week-hero.surf-grass::before{ background:var(--grass); }
+.mh, .week-hero{ position:relative; overflow:hidden; }
+
+/* Le court, en filigrane : une texture, jamais un obstacle a la lecture */
+.mh-court, .hero-court{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:.16;pointer-events:none;z-index:0;
+}
+.mh-court .court, .hero-court .court{ width:auto; height:100%; max-width:none; }
+.mh > *:not(.mh-court), .week-hero > *:not(.hero-court){ position:relative; z-index:1; }
+.court{ display:block; }
+
+/* Le tableau d'affichage prend lui aussi la teinte */
+body[data-surf="clay"]  .board{ border-color:rgba(214,103,58,.4); }
+body[data-surf="hard"]  .board{ border-color:rgba(46,123,230,.4); }
+body[data-surf="grass"] .board{ border-color:rgba(67,166,90,.4); }
+
+/* Un halo de la couleur du jour sur le tableau d'affichage */
+body[data-surf="clay"]  .board{ box-shadow:0 0 26px rgba(214,103,58,.16) inset; }
+body[data-surf="hard"]  .board{ box-shadow:0 0 26px rgba(46,123,230,.16) inset; }
+body[data-surf="grass"] .board{ box-shadow:0 0 26px rgba(67,166,90,.16) inset; }
+body[data-surf] .mh-top{ letter-spacing:.16em; }
+
+/* ─────────── Partage ─────────── */
+.share-block{
+  white-space:pre-wrap; word-break:break-word; margin:0;
+  font-family:var(--disp), system-ui, sans-serif; font-size:12.5px; line-height:1.55;
+  color:var(--txt2); max-height:280px; overflow-y:auto;
+}
+#sh-prev canvas{ max-width:100%; }
+#home-io{ margin-top:4px; }
+
+
+/* ═══════════ VAMONOS TENNIS — identite de marque ═══════════
+   Le logo est dessine en vert bouteille sur blanc. Plutot que de le recolorer —
+   la compression de la source rend toute reteinte sale — on le pose sur une
+   plaque claire, comme le ferait n'importe quelle marque sur un fond sombre. */
+.home-mark{
+  background:#FBFBF9;
+  border-radius:18px;
+  padding:18px 22px;
+  margin:0 auto 4px;
+  max-width:330px;
+  box-shadow:0 10px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.06);
+}
+.home-mark img{ display:block; width:100%; height:auto; }
+
+/* Le vert de la marque devient la couleur d'accent des moments forts. */
+:root{
+  --marque:#1D6B47;
+  --marque-clair:#4AC878;
+  --marque-balle:#E8DE23;
+}
+.home-hero{ padding-top:8px; }
+.btn-primary{
+  background:linear-gradient(180deg, var(--marque-clair), var(--marque));
+  box-shadow:0 6px 20px rgba(29,107,71,.34);
+  border-color:rgba(74,200,120,.5);
+}
+.btn-primary:active{ filter:brightness(.94); }
+.chip.good{ border-color:rgba(74,200,120,.45); }
+
+/* ─────────── Partenaire ───────────
+   Identifié comme publicité, séparé du jeu par un trait, et jamais intercalé
+   dans un écran de jeu : il reste sur l'accueil, là où on choisit d'y aller. */
+.sponsor{
+  margin:22px 0 6px; padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.sponsor-tag{
+  font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--txt3); margin-bottom:8px; text-align:center;
+}
+.sponsor-link{
+  display:block; border-radius:12px; overflow:hidden;
+  box-shadow:0 6px 22px rgba(0,0,0,.38);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.sponsor-link:active{ transform:scale(.985); }
+.sponsor-link img{ display:block; width:100%; height:auto; }
+.sponsor-txt{
+  font-size:12px; line-height:1.55; color:var(--txt2);
+  margin:12px 2px 0;
+}
+.sponsor-txt b{ color:var(--txt); }
+.sponsor-legal{
+  font-size:10.5px; line-height:1.5; color:var(--txt3);
+  margin:9px 2px 0; padding:8px 10px;
+  border:1px solid var(--line); border-radius:8px;
+}
+.sponsor-legal b{ color:var(--warn); }
+
+
+/* ─────────── Champ de saisie ─────────── */
+.champ{
+  display:block; width:100%; margin:6px 0 2px; padding:14px 16px;
+  background:var(--bg2); border:1px solid var(--line); border-radius:11px;
+  color:var(--txt); font-family:var(--disp); font-size:17px; letter-spacing:.02em;
+  outline:none; transition:border-color .16s ease;
+}
+.champ:focus{ border-color:var(--marque-clair); }
+.champ::placeholder{ color:var(--txt3); }
+
+.home-legal{text-align:center;font-size:11px;margin:2px 0 18px}
+.home-legal a{color:var(--txt3);text-decoration:none;border-bottom:1px solid var(--line)}
+.home-legal a:hover{color:var(--txt2)}

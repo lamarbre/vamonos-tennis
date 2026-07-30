@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>VAMONOS TENNIS — Simulateur de carrière de tennis</title>
+<meta name="description" content="Un simulateur de carrière de joueur de tennis. Un circuit vivant de 1150 joueurs, un classement sur 46 semaines glissantes, des matchs joués jeu par jeu, l'entraînement, le staff, les blessures et l'argent. Des juniors à la retraite.">
+<meta name="theme-color" content="#0E2A1E">
+<link rel="icon" type="image/png" href="icone.png?v=34">
+<link rel="apple-touch-icon" href="icone.png?v=34">
+<link rel="canonical" href="https://vamonostennis.com/">
+
+<!-- Aperçu au partage. Sans ces balises, un lien envoyé sur WhatsApp, X ou Discord
+     s'affiche en URL nue : ni titre, ni image. C'est la première chose que voit
+     quelqu'un à qui l'on partage sa carrière. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vamonos Tennis">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://vamonostennis.com/">
+<meta property="og:title" content="Vamonos Tennis — Simulateur de carrière de tennis">
+<meta property="og:description" content="Un circuit vivant de 1 150 joueurs, un classement sur 46 semaines glissantes, des matchs joués jeu par jeu. De vos 16 ans à la retraite. Gratuit, sans compte.">
+<meta property="og:image" content="https://vamonostennis.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vamonos Tennis — simulateur de carrière de tennis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vamonos Tennis — Simulateur de carrière de tennis">
+<meta name="twitter:description" content="1 150 joueurs, 46 semaines glissantes, des matchs joués jeu par jeu. De vos 16 ans à la retraite. Gratuit, sans compte.">
+<meta name="twitter:image" content="https://vamonostennis.com/og.jpg">
+
+<link rel="stylesheet" href="style.css?v=34">
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════ ACCUEIL ══════════ -->
+  <section id="sc-home" class="screen active">
+    <div class="home-hero">
+      <div class="home-mark"><img src="logo.png?v=34" alt="Vamonos Tennis"></div>
+      <p class="home-tag">Un circuit vivant de 1 150 joueurs. Un classement sur 46 semaines glissantes.
+        Des matchs joués jeu par jeu.<br><b>De vos 16 ans à la retraite, une semaine après l'autre.</b></p>
+    </div>
+    <button id="btn-start" class="btn btn-primary">COMMENCER UNE CARRIÈRE</button>
+    <button id="btn-continue" class="btn btn-ghost hidden">REPRENDRE LA CARRIÈRE EN COURS</button>
+    <div class="home-row">
+      <button id="btn-badges" class="btn btn-ghost">🏅 Badges</button>
+      <button id="btn-pantheon" class="btn btn-ghost">🏛️ Panthéon</button>
+    </div>
+    <div id="home-io"></div>
+    <div class="panel">
+      <div class="panel-h">DEUX FAÇONS DE VIVRE LA MÊME CARRIÈRE</div>
+      <div class="panel-b">
+        <b>⚡ Express</b> — vous fixez une ligne pour l'année, le circuit s'occupe du reste, et on ne vous
+        rend la main que sur les matchs qui comptent vraiment. Une carrière entière en une soirée.<br><br>
+        <b>🎾 Carrière complète</b> — les 46 semaines une par une : le tournoi, l'entraînement, le repos,
+        les cours à donner pour payer le billet d'avion. Chaque match se joue jeu par jeu, avec vos
+        tactiques, votre fraîcheur et vos nerfs.<br><br>
+        Même monde, même moteur, même classement — le rythme se choisit à la création. Et dans les deux
+        cas, <b>chaque saison</b>, il faut défendre les points de l'an dernier, payer le staff et
+        surveiller sept zones du corps qui s'usent.
+      </div>
+    </div>
+    <!-- Partenaire. Le bandeau est identifié comme publicité, le lien est en
+         rel="sponsored nofollow", et la mention légale accompagne l'annonce. -->
+    <aside class="sponsor" aria-label="Publicité de notre partenaire">
+      <div class="sponsor-tag">Publicité · notre partenaire</div>
+      <a class="sponsor-link" href="https://taap.it/grealishenbubu2"
+         target="_blank" rel="noopener noreferrer sponsored nofollow">
+        <img src="sponsor.jpg?v=34" alt="Celsius Casino — offre de bienvenue" loading="lazy">
+      </a>
+      <p class="sponsor-txt">
+        <b>Vamonos Tennis est gratuit, sans compte et sans publicité intrusive.</b>
+        Ce partenariat est ce qui paie le serveur et le nom de domaine. Si le jeu vous
+        plaît et que vous êtes majeur, passer par ce lien est la façon la plus simple
+        de le soutenir — ça ne vous coûte rien de plus.
+      </p>
+      <p class="sponsor-legal">
+        <b>18+</b> — Les jeux d'argent et de hasard sont interdits aux mineurs.
+        Jouer comporte des risques : endettement, isolement, dépendance.
+        Pour être aidé, appelez le <b>09 74 75 13 13</b> (appel non surtaxé).
+      </p>
+    </aside>
+    <p class="home-meta"></p>
+    <p class="home-legal"><a href="legal.html">Mentions légales et confidentialité</a></p>
+  </section>
+
+  <!-- ══════════ CRÉATION ══════════ -->
+  <section id="sc-pick" class="screen">
+    <button class="btn-back" data-back>← Retour</button>
+    <h2 id="pick-title" class="pick-title"></h2>
+    <p id="pick-sub" class="pick-sub"></p>
+    <div id="pick-list" class="pick-list"></div>
+  </section>
+
+  <!-- ══════════ CARRIÈRE ══════════ -->
+  <section id="sc-career" class="screen">
+    <header class="topbar">
+      <div class="tb-left">
+        <div id="tb-name" class="tb-name"></div>
+        <div id="tb-sub" class="tb-sub"></div>
+      </div>
+      <div class="tb-right">
+        <div id="tb-rank" class="tb-rank"></div>
+        <div id="tb-money" class="tb-money"></div>
+      </div>
+    </header>
+    <div class="minibars">
+      <div class="mb"><span>FRAÎCHEUR</span><div class="mbar"><div id="mb-fit"></div></div></div>
+      <div class="mb"><span>CORPS</span><div class="mbar"><div id="mb-body"></div></div></div>
+      <div class="mb"><span>MORAL</span><div class="mbar"><div id="mb-mor"></div></div></div>
+    </div>
+    <div id="tab-body"></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="week">📅<span>Semaine</span></button>
+      <button class="tab" data-tab="cal">🗓️<span>Calendrier</span></button>
+      <button class="tab" data-tab="train">🏋️<span>Travail</span></button>
+      <button class="tab" data-tab="team">💼<span>Équipe</span></button>
+      <button class="tab" data-tab="rank">📊<span>Classement</span></button>
+      <button class="tab" data-tab="prog">📈<span>Progrès</span></button>
+      <button class="tab" data-tab="me">👤<span>Profil</span></button>
+    </nav>
+  </section>
+
+  <!-- ══════════ MATCH ══════════ -->
+  <section id="sc-match" class="screen">
+    <div id="match-head"></div>
+    <div id="score-board"></div>
+    <div id="match-feed" class="feed"></div>
+    <div id="match-ctrl" class="match-ctrl"></div>
+  </section>
+
+  <!-- ══════════ PLEIN ÉCRAN (tournoi, saison, fin) ══════════ -->
+  <section id="sc-full" class="screen">
+    <div id="full-body"></div>
+  </section>
+
+</div>
+
+<script src="data.js?v=34"></script>
+<script src="events.js?v=34"></script>
+<script src="events2.js?v=34"></script>
+<script src="tour.js?v=34"></script>
+<script src="match.js?v=34"></script>
+<script src="world.js?v=34"></script>
+<script src="career.js?v=34"></script>
+<script src="save.js?v=34"></script>
+<script src="share.js?v=34"></script>
+<script src="stats.js?v=34"></script>
+<script src="game.js?v=34"></script>
+</body>
+</html>

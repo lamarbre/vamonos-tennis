@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vamonos-tennis
+    runtime: node
+    plan: starter
+    buildCommand: ""
+    startCommand: node serveur.js
+    envVars:
+      - key: ADMIN_MDP
+        sync: false
+      - key: DB_PATH
+        value: /data/vamonos.db
+    disk:
+      name: donnees
+      mountPath: /data
+      sizeGB: 1
