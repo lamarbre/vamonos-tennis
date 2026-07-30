@@ -112,7 +112,7 @@ function evt(type, valeur){ envoi('/api/evt', { partie, type, valeur: valeur || 
 /* Le sponsor : combien de fois la bannière est vue, combien de fois cliquée.
    C'est ce qui dira si le partenariat paie réellement l'hébergement. */
 function sponsorVu(){
-  const a = document.querySelector('.sponsor-link');
+  const a = document.querySelector('.pt-lien');
   if (!a || !('IntersectionObserver' in window)) return;
   let compte = false;
   new IntersectionObserver((ent, obs) => {

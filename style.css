@@ -533,32 +533,32 @@ body[data-surf] .mh-top{ letter-spacing:.16em; }
 /* ─────────── Partenaire ───────────
    Identifié comme publicité, séparé du jeu par un trait, et jamais intercalé
    dans un écran de jeu : il reste sur l'accueil, là où on choisit d'y aller. */
-.sponsor{
+.pt-bloc{
   margin:22px 0 6px; padding-top:18px;
   border-top:1px solid var(--line);
 }
-.sponsor-tag{
+.pt-tag{
   font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--txt3); margin-bottom:8px; text-align:center;
 }
-.sponsor-link{
+.pt-lien{
   display:block; border-radius:12px; overflow:hidden;
   box-shadow:0 6px 22px rgba(0,0,0,.38);
   transition:transform .18s ease, box-shadow .18s ease;
 }
-.sponsor-link:active{ transform:scale(.985); }
-.sponsor-link img{ display:block; width:100%; height:auto; }
-.sponsor-txt{
+.pt-lien:active{ transform:scale(.985); }
+.pt-lien img{ display:block; width:100%; height:auto; }
+.pt-txt{
   font-size:12px; line-height:1.55; color:var(--txt2);
   margin:12px 2px 0;
 }
-.sponsor-txt b{ color:var(--txt); }
-.sponsor-legal{
+.pt-txt b{ color:var(--txt); }
+.pt-legal{
   font-size:10.5px; line-height:1.5; color:var(--txt3);
   margin:9px 2px 0; padding:8px 10px;
   border:1px solid var(--line); border-radius:8px;
 }
-.sponsor-legal b{ color:var(--warn); }
+.pt-legal b{ color:var(--warn); }
 
 
 /* ─────────── Champ de saisie ─────────── */
