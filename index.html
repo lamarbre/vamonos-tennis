@@ -6,8 +6,8 @@
 <title>VAMONOS TENNIS — Simulateur de carrière de tennis</title>
 <meta name="description" content="Un simulateur de carrière de joueur de tennis. Un circuit vivant de 1150 joueurs, un classement sur 46 semaines glissantes, des matchs joués jeu par jeu, l'entraînement, le staff, les blessures et l'argent. Des juniors à la retraite.">
 <meta name="theme-color" content="#0E2A1E">
-<link rel="icon" type="image/png" href="icone.png?v=39">
-<link rel="apple-touch-icon" href="icone.png?v=39">
+<link rel="icon" type="image/png" href="icone.png?v=40">
+<link rel="apple-touch-icon" href="icone.png?v=40">
 <link rel="canonical" href="https://www.vamonostennis.com/">
 
 <!-- Aperçu au partage. Sans ces balises, un lien envoyé sur WhatsApp, X ou Discord
@@ -28,19 +28,41 @@
 <meta name="twitter:description" content="1 150 joueurs, 46 semaines glissantes, des matchs joués jeu par jeu. De vos 16 ans à la retraite. Gratuit, sans compte.">
 <meta name="twitter:image" content="https://www.vamonostennis.com/og.jpg">
 
-<link rel="stylesheet" href="style.css?v=39">
+<script>
+/* Amorce de langue : choix retenu, sinon langue du navigateur — pas de
+   geolocalisation : un francophone a Londres veut du francais, et personne
+   n'a envie d'une demande d'autorisation. */
+(function(){
+  var l=''; try{ l=localStorage.getItem('vamonos_langue')||''; }catch(e){}
+  if(l!=='fr'&&l!=='en'&&l!=='es'){
+    var n=String((navigator.languages&&navigator.languages[0])||navigator.language||'fr').slice(0,2).toLowerCase();
+    l = n==='fr' ? 'fr' : (n==='es' ? 'es' : 'en');
+  }
+  window.__LANGUE=l;
+  if(l!=='fr'){
+    document.write('<scr'+'ipt src="traductions.'+l+'.js?v=40"></scr'+'ipt>');
+    document.write('<scr'+'ipt src="traductions2.'+l+'.js?v=40"></scr'+'ipt>');
+  }
+})();
+</script>
+<link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
 <div id="app">
 
   <!-- ══════════ ACCUEIL ══════════ -->
   <section id="sc-home" class="screen active">
+    <div class="langs">
+      <button data-lang="fr" type="button">FR</button>
+      <button data-lang="en" type="button">EN</button>
+      <button data-lang="es" type="button">ES</button>
+    </div>
     <div class="home-hero">
-      <div class="home-mark"><img src="logo.png?v=39" alt="Vamonos Tennis"></div>
-      <p class="home-tag">Un circuit vivant de 1 150 joueurs. Un classement sur 46 semaines glissantes.
+      <div class="home-mark"><img src="logo.png?v=40" alt="Vamonos Tennis"></div>
+      <p class="home-tag" data-tr="home.tag">Un circuit vivant de 1 150 joueurs. Un classement sur 46 semaines glissantes.
         Des matchs joués jeu par jeu.<br><b>De vos 16 ans à la retraite, une semaine après l'autre.</b></p>
     </div>
-    <button id="btn-start" class="btn btn-primary">COMMENCER UNE CARRIÈRE</button>
+    <button id="btn-start" class="btn btn-primary" data-tr="COMMENCER UNE CARRIÈRE">COMMENCER UNE CARRIÈRE</button>
     <button id="btn-continue" class="btn btn-ghost hidden">REPRENDRE LA CARRIÈRE EN COURS</button>
     <div class="home-row">
       <button id="btn-badges" class="btn btn-ghost">🏅 Badges</button>
@@ -48,8 +70,8 @@
     </div>
     <div id="home-io"></div>
     <div class="panel">
-      <div class="panel-h">DEUX FAÇONS DE VIVRE LA MÊME CARRIÈRE</div>
-      <div class="panel-b">
+      <div class="panel-h" data-tr="DEUX FAÇONS DE VIVRE LA MÊME CARRIÈRE">DEUX FAÇONS DE VIVRE LA MÊME CARRIÈRE</div>
+      <div class="panel-b" data-tr="home.deux">
         <b>⚡ Express</b> — vous fixez une ligne pour l'année, le circuit s'occupe du reste, et on ne vous
         rend la main que sur les matchs qui comptent vraiment. Une carrière entière en une soirée.<br><br>
         <b>🎾 Carrière complète</b> — les 46 semaines une par une : le tournoi, l'entraînement, le repos,
@@ -66,9 +88,9 @@
       <div class="pt-tag">Publicité · notre partenaire</div>
       <a class="pt-lien" href="https://celsius.games/TlCTisvEhe"
          target="_blank" rel="noopener noreferrer sponsored nofollow">
-        <img src="pt-banniere.jpg?v=39" alt="Celsius Casino — offre de bienvenue" loading="lazy">
+        <img src="pt-banniere.jpg?v=40" alt="Celsius Casino — offre de bienvenue" loading="lazy">
       </a>
-      <p class="pt-txt">
+      <p class="pt-txt" data-tr="home.soutien">
         <b>Vamonos Tennis est gratuit, sans compte et sans publicité intrusive.</b>
         Ce partenariat est ce qui paie le serveur et le nom de domaine. Si le jeu vous
         plaît et que vous êtes majeur, passer par ce lien est la façon la plus simple
@@ -111,13 +133,13 @@
     </div>
     <div id="tab-body"></div>
     <nav class="tabs">
-      <button class="tab active" data-tab="week">📅<span>Semaine</span></button>
-      <button class="tab" data-tab="cal">🗓️<span>Calendrier</span></button>
-      <button class="tab" data-tab="train">🏋️<span>Travail</span></button>
-      <button class="tab" data-tab="team">💼<span>Équipe</span></button>
-      <button class="tab" data-tab="rank">📊<span>Classement</span></button>
-      <button class="tab" data-tab="prog">📈<span>Progrès</span></button>
-      <button class="tab" data-tab="me">👤<span>Profil</span></button>
+      <button class="tab active" data-tab="week">📅<span data-tr="Semaine">Semaine</span></button>
+      <button class="tab" data-tab="cal">🗓️<span data-tr="Calendrier">Calendrier</span></button>
+      <button class="tab" data-tab="train">🏋️<span data-tr="Travail">Travail</span></button>
+      <button class="tab" data-tab="team">💼<span data-tr="Équipe">Équipe</span></button>
+      <button class="tab" data-tab="rank">📊<span data-tr="Classement">Classement</span></button>
+      <button class="tab" data-tab="prog">📈<span data-tr="Progrès">Progrès</span></button>
+      <button class="tab" data-tab="me">👤<span data-tr="Profil">Profil</span></button>
     </nav>
   </section>
 
@@ -136,17 +158,18 @@
 
 </div>
 
-<script src="data.js?v=39"></script>
-<script src="events.js?v=39"></script>
-<script src="events2.js?v=39"></script>
-<script src="tour.js?v=39"></script>
-<script src="match.js?v=39"></script>
-<script src="world.js?v=39"></script>
-<script src="career.js?v=39"></script>
-<script src="save.js?v=39"></script>
-<script src="share.js?v=39"></script>
-<script src="suivi.js?v=39"></script>
-<script src="mesure.js?v=39"></script>
-<script src="game.js?v=39"></script>
+<script src="data.js?v=40"></script>
+<script src="events.js?v=40"></script>
+<script src="events2.js?v=40"></script>
+<script src="tour.js?v=40"></script>
+<script src="match.js?v=40"></script>
+<script src="world.js?v=40"></script>
+<script src="career.js?v=40"></script>
+<script src="save.js?v=40"></script>
+<script src="langue.js?v=40"></script>
+<script src="share.js?v=40"></script>
+<script src="suivi.js?v=40"></script>
+<script src="mesure.js?v=40"></script>
+<script src="game.js?v=40"></script>
 </body>
 </html>
