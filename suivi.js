@@ -132,3 +132,8 @@ addEventListener('visibilitychange', () => {
 return { id, get pseudo(){ return pseudo; }, bonjour, nouvellePartie, pouls, finPartie,
          evt, sponsorVu, actif: ACTIF };
 })();
+
+/* Un const de script ne s'attache pas à window : sans cette ligne, toutes les
+   gardes `if (window.Stats)` du jeu étaient fausses et la télémétrie entière
+   restait muette — en silence, exactement comme on le lui avait appris. */
+window.Stats = Stats;
