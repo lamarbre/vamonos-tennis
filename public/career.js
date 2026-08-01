@@ -1129,7 +1129,7 @@ function quickTournament(c, t, status, opt){
     if (!opp){ resolveRound(c, true); continue; }
     if (opt.stopOnBig && isBigMatch(c, st)) return { st, pause:true, opp };
     const won = MatchEngine.quickWin(c.me, opp, t.surf);
-    const mins = TIERS[t.tier].bo5 ? 150 : 95;
+    const mins = (TIERS[t.tier].bo5 && c.me.gender !== 'w') ? 150 : 95;
     c.fitness = clamp(c.fitness - matchCost(mins), 0, 100);
     matchWear(c, mins, t.surf);
     if (st.davis) resolveDavisTie(c, won); else resolveRound(c, won);
@@ -1632,7 +1632,11 @@ function resolveOption(c, opt){
   const total = opt.outcomes.reduce((s,o) => s + o.weight, 0);
   let r = R() * total, out = opt.outcomes[opt.outcomes.length-1];
   for (const o of opt.outcomes){ r -= o.weight; if (r <= 0){ out = o; break; } }
-  return { text: out.text, log: applyFx(c, out.fx) };
+  const texte = String(out.text)
+    .replace(/\{rival\}/g, c.rival ? c.rival.name : '')
+    .replace(/\{nation\}/g, c.me.nation.name)
+    .replace(/\{rang\}/g, '#' + c.me.rank).replace(/\{age\}/g, c.me.age);
+  return { text: texte, log: applyFx(c, out.fx) };
 }
 
 /* ───────────── Badges ───────────── */

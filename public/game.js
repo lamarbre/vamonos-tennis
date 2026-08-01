@@ -629,13 +629,15 @@ function exKeyMatch(r){
 
   $('play').onclick = () => {
     const m = MatchEngine.create(c.me, opp, {
-      surface: r.t.surf, bo5: st.davis ? true : !!tier.bo5,
+      surface: r.t.surf,
+      // Sur le circuit féminin, tout se joue en deux sets gagnants — Chelems compris.
+      bo5: c.me.gender === 'w' ? false : (st.davis ? true : !!tier.bo5),
       tournament: r.t.name, round,
       tacticA: G.ui.tactic || 'balanced',
       fatigueA: Math.max(0, 100 - c.fitness), fatigueB: opp.fatigue || 0,
       clutchBonus: Career.clutchAgainst(c, opp)
     });
-    m.maxMoments = tier.bo5 ? 4 : 3;
+    m.maxMoments = m.bo5 ? 4 : 3;
     G.match = m; G.exMatch = true;
     MatchEngine.playAll(m);       // on file jusqu'au premier point qui compte
     renderMatch();
@@ -1347,10 +1349,24 @@ function drawScreen(){
       ${scoutHtml(Career.scout(c, opp, t.surf))}
       <div class="sec">VOTRE PLAN DE JEU</div><div id="tacbox"></div>
       <button class="btn btn-primary" id="play">ENTRER SUR LE COURT</button>`;
+  } else if (!st.done){
+    /* Tête de série exemptée : sans ce bouton, l'écran était un cul-de-sac —
+       le tableau s'affichait et plus rien ne bougeait. Le moteur sait déjà
+       traiter l'exemption : le mode Express passe par le même resolveRound. */
+    h += `<div class="week-hero">
+      <div class="week-when">${st.phase==='quali' ? 'QUALIFICATIONS' : Career.roundName(st, st.round).toUpperCase()}</div>
+      <div class="week-what">Exempté de ce tour</div>
+      <div class="week-why">Votre classement vous dispense de ce tour : vous entrerez
+        directement au tour suivant, pendant que les autres se fatiguent.</div></div>
+      <button class="btn btn-primary" id="bye">PASSER AU TOUR SUIVANT</button>`;
   }
   if (st.slots.length) h += pathHtml(st) + drawHtml(st);
   fullScreen(h);
   bindDraw();
+
+  if (!opp && !st.done && $('bye')){
+    $('bye').onclick = () => { Career.resolveRound(c, true); autosave(); drawScreen(); };
+  }
 
   if (opp){
     const box = $('tacbox');
@@ -1490,7 +1506,7 @@ function startMatch(opp, isDavis){
   const seed = Career.seedOf(st, opp);
   const m = MatchEngine.create(c.me, opp, {
     surface: t.surf,
-    bo5: isDavis ? true : (!!TIERS[t.tier].bo5 && st.phase === 'main'),
+    bo5: c.me.gender === 'w' ? false : (isDavis ? true : (!!TIERS[t.tier].bo5 && st.phase === 'main')),
     tournament: t.name,
     round: isDavis ? 'Simple de Coupe Davis'
          : st.phase==='quali' ? 'Qualifications'
@@ -1666,7 +1682,8 @@ function logScreen(log, next){
 
 function eventScreen(e, next){
   const c = G.c;
-  const txt = e.text.replace('{rival}', c.rival.name).replace('{nation}', c.me.nation.name);
+  const txt = e.text.replace('{rival}', c.rival.name).replace('{nation}', c.me.nation.name)
+    .replace(/\{rang\}/g, '#' + c.me.rank).replace(/\{age\}/g, c.me.age);
   let h = `<div class="card"><div class="card-cat">${e.icon} ${e.cat.toUpperCase()}</div>
     <div class="card-txt">${esc(txt)}</div><div class="card-opts" id="opts"></div></div>`;
   fullScreen(h);

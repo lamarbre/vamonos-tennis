@@ -215,6 +215,10 @@ function fillDraw(w, t, busy){
   for (const p of w.players){
     if (p.retired || busy.has(p.id) || p.injuredUntil > abs) continue;
     if (p.rank > hi) continue;
+    // Même règle que pour le joueur humain : le circuit secondaire refuse les
+    // têtes d'affiche. Sans ce mur, une n°3 mondiale pouvait, une fois sur
+    // deux cents, apparaître dans un tableau de 125.
+    if (tier.band && p.rank < tier.band[0] * 0.4) continue;
     // Personne ne joue 46 semaines par an : la fatigue impose des impasses.
     // Sauf pour un Grand Chelem ou les Jeux : la, on vient blesse s il le faut.
     const unmissable = t.tier === 'slam' || t.tier === 'olympics' || t.tier === 'finals';

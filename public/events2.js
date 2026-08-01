@@ -375,12 +375,12 @@ const EVENTS_B = [
     ]}
   ]},
 
-{ id:'y_bonus', cat:'Argent', icon:'📄', w:10, cond:{rMax:100,aMin:21},
-  text:'Votre contrat d\'équipementier contient une clause : 250 000 € de prime si vous finissez la saison dans le top 20. Vous êtes 22e, il reste deux tournois.',
+{ id:'y_bonus', cat:'Argent', icon:'📄', w:10, cond:{rMin:21, rMax:32, aMin:21},
+  text:'Votre contrat d\'équipementier contient une clause : 250 000 € de prime si vous finissez la saison dans le top 20. Vous êtes {rang}, il reste deux tournois.',
   options:[
     { label:'Tout jouer, quitte à se cramer', outcomes:[
-      { weight:50, text:'Vous jouez les deux tournois à fond. Top 18 au 31 décembre. Le chèque arrive en janvier.', fx:{ money:0.25, form:-14, body:-6, mor:10 } },
-      { weight:50, text:'Vous jouez, vous perdez d\'entrée deux fois, et vous finissez 24e. Il vous restait une blessure à ne pas prendre.', fx:{ form:-14, body:-8, mor:-10 } }
+      { weight:50, text:'Vous jouez tout, vous gagnez beaucoup, et l\'équipementier paie sans discuter. Le corps, lui, présentera sa facture en janvier.', fx:{ money:0.25, pts:150, form:-14, body:-6, mor:10 } },
+      { weight:50, text:'Vous jouez, vous perdez d\'entrée deux fois, et la clause expire en silence. Il vous restait surtout une blessure à ne pas prendre.', fx:{ form:-14, body:-8, mor:-10 } }
     ]},
     { label:'Se préserver pour l\'année suivante', outcomes:[
       { weight:100, text:'Vous laissez filer la prime pour arriver frais en janvier. Votre agent ne s\'en remet pas ; votre corps, si.', fx:{ form:12, body:8, mor:-3 } }

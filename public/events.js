@@ -241,11 +241,11 @@ const EVENTS_EXTRA = [
     ]}
   ]},
 
-{ id:'x_presser', cat:'Médias', icon:'🎙️', w:13, cond:{aMin:19},
-  text:'Conférence de presse après une défaite au premier tour. Un journaliste ouvre par : « Est-ce qu\'on peut dire que vous êtes en fin de cycle ? » Vous avez 24 ans.',
+{ id:'x_presser', cat:'Médias', icon:'🎙️', w:13, cond:{aMin:23, aMax:28},
+  text:'Conférence de presse après une défaite au premier tour. Un journaliste ouvre par : « Est-ce qu\'on peut dire que vous êtes en fin de cycle ? » Vous avez {age} ans.',
   options:[
     { label:'Répondre du tac au tac', hint:'Piquant', outcomes:[
-      { weight:60, text:'« En fin de cycle à 24 ans, c\'est vous qui l\'écrivez, moi je joue encore huit ans. » La phrase tourne partout. Vous venez de vous fabriquer une obligation.', fx:{ rep:8, men:3, mor:4 } },
+      { weight:60, text:'« En fin de cycle à {age} ans, c\'est vous qui l\'écrivez, moi je joue encore huit ans. » La phrase tourne partout. Vous venez de vous fabriquer une obligation.', fx:{ rep:8, men:3, mor:4 } },
       { weight:40, text:'Votre réponse est cinglante et un peu trop personnelle. Ce journaliste écrira sur vous pendant dix ans.', fx:{ rep:5, mor:-4, flag:'presse_hostile' } }
     ]},
     { label:'Rester factuel', outcomes:[
