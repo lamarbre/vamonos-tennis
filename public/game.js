@@ -867,7 +867,15 @@ function tabTrain(){
       Annulez l'inscription depuis l'onglet Semaine pour travailler à la place.</div>`);
     return;
   }
-  let h = `<div class="sec">LE TRAVAIL DE LA SEMAINE</div>`;
+  const lvlT = Math.round(World.refreshLevel(c.me)), capT = Career.effPot(c);
+  const dAge = c.me.age - (c.me.peak || 26);
+  const phase = dAge < -2 ? 'Vos années de construction : chaque bloc paie.'
+    : dAge <= 0 ? 'Approche du pic : les gains ralentissent, la précision compte.'
+    : dAge <= 2 ? 'Au pic. On affine, on n\'empile plus.'
+    : 'Après le pic : l\'entraînement freine le déclin, il ne construit plus.';
+  let h = `<div class="panel"><div class="r-s">Niveau <b>${lvlT}</b> · plafond avec votre équipe
+      <b style="color:var(--gold)">${capT}</b> · ${c.me.age} ans — ${phase}</div></div>
+    <div class="sec">LE TRAVAIL DE LA SEMAINE</div>`;
   TRAININGS.forEach(t => {
     const load = t.load > 1 ? 'Charge forte' : t.load > 0.5 ? 'Charge moyenne' : t.load > 0 ? 'Charge légère' : 'Récupération';
     h += `<button class="pick-row" data-tr="${t.id}">

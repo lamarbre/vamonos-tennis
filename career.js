@@ -244,7 +244,11 @@ function trajFactor(age, peak){
   if (d <= -2) return 0.72;
   if (d <=  0) return 0.38;
   if (d <=  2) return 0.10;
-  return 0;
+  // Jamais zéro : à 30 ans passés on ne construit plus, mais on entretient.
+  // Un facteur nul rendait l'entraînement littéralement mort — sans un mot —
+  // et le joueur croyait le jeu cassé. Ce plancher permet de freiner le déclin
+  // d'un attribut travaillé, pas de l'inverser.
+  return 0.05;
 }
 
 function train(c, trainingId, intensityId){
@@ -297,7 +301,18 @@ function train(c, trainingId, intensityId){
     const d = c.me.attrs[k] - before;
     if (d >= 0.05) log.push({ txt:`${ATTRS.find(a=>a.k===k).name} +${d.toFixed(1)}`, good:true });
   });
-  if (!log.length) log.push({ txt:'Aucun progrès mesurable cette semaine', good:false });
+  if (!log.length){
+    // Le silence faisait croire à un bug. On nomme la cause réelle.
+    const capNow = effPot(c);
+    if (c.me.age > c.me.peak + 2)
+      log.push({ txt:'À ' + c.me.age + ' ans, l\'entraînement entretient plus qu\'il ne construit : '
+        + 'il freine le déclin, il ne fait plus progresser.', good:false });
+    else if (lvl >= capNow - 0.8)
+      log.push({ txt:'Vous êtes à votre plafond (' + capNow + '). Le talent ne s\'entraîne pas — '
+        + 'seul un meilleur encadrement peut encore le relever un peu.', good:false });
+    else
+      log.push({ txt:'Aucun progrès mesurable cette semaine', good:false });
+  }
 
   const load = tr.load * it.load;
   c.fitness = clamp(c.fitness - load * 3.4 + BAL.fatigueRecover * 0.55, 0, 100);
