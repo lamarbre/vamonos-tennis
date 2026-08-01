@@ -101,9 +101,9 @@ function home(){
   const bc = $('btn-continue');
   if (sv){
     bc.classList.remove('hidden');
-    bc.innerHTML = `${t('REPRENDRE')} — ${esc(sv.name)} ${sv.nation}<br>
+    bc.innerHTML = `${TR('REPRENDRE')} — ${esc(sv.name)} ${sv.nation}<br>
       <span style="font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--txt3)">
-      ${sv.age} ${t('ans')} · #${sv.rank} ${t('mondial')} · ${t('semaine')} ${sv.week} · ${sv.year}</span>`;
+      ${sv.age} ${TR('ans')} · #${sv.rank} ${TR('mondial')} · ${TR('semaine')} ${sv.week} · ${sv.year}</span>`;
     bc.onclick = () => {
       const c = Save.read();
       if (!c){ alert('Sauvegarde illisible.'); Save.clear(); return home(); }
@@ -161,13 +161,13 @@ function pickPseudo(){
   const actuel = (window.Stats && Stats.pseudo) || '';
   G.back = [];
   fullScreen(`<div class="week-hero">
-      <div class="week-when">${t('AVANT DE COMMENCER')}</div>
-      <div class="week-what">${t('Comment vous appelle-t-on ?')}</div>
-      <div class="week-why">${t('Ce pseudo accompagnera vos carrières. Vous pourrez le changer plus tard.')}</div></div>
+      <div class="week-when">${TR('AVANT DE COMMENCER')}</div>
+      <div class="week-what">${TR('Comment vous appelle-t-on ?')}</div>
+      <div class="week-why">${TR('Ce pseudo accompagnera vos carrières. Vous pourrez le changer plus tard.')}</div></div>
     <input id="pseudo" class="champ" type="text" maxlength="24" autocomplete="nickname"
-           placeholder="${t('Votre pseudo')}" value="${esc(actuel)}">
-    <button class="btn btn-primary" id="pgo">${t('CONTINUER')}</button>
-    <p class="p-meta" style="margin-top:14px">${t('Aucun compte, aucun mot de passe, aucune adresse e-mail. Le jeu retient seulement ce pseudo et le déroulé de vos parties.')}</p>`, home);
+           placeholder="${TR('Votre pseudo')}" value="${esc(actuel)}">
+    <button class="btn btn-primary" id="pgo">${TR('CONTINUER')}</button>
+    <p class="p-meta" style="margin-top:14px">${TR('Aucun compte, aucun mot de passe, aucune adresse e-mail. Le jeu retient seulement ce pseudo et le déroulé de vos parties.')}</p>`, home);
 
   const champ = $('pseudo');
   const partir = () => {
@@ -196,22 +196,22 @@ function renderPick(title, sub, items, grid){
 
 function pickNation(){
   G.draft = {}; G.back.push(home);
-  renderPick(t('VOTRE NATION'), t('Elle oriente vos surfaces de prédilection et votre notoriété.'),
+  renderPick(TR('VOTRE NATION'), TR('Elle oriente vos surfaces de prédilection et votre notoriété.'),
     NATIONS.map(n => ({ html:`<span class="flag">${n.flag}</span><span class="opt-name">${n.name}</span>`,
       go:()=>{ G.draft.nation=n; pickGender(); } })), true);
 }
 function pickGender(){
   G.back.push(pickNation);
-  renderPick(t('VOTRE CIRCUIT'), t('Sur quel circuit allez-vous écrire votre histoire ?'), [
-    { html:`<div class="opt-name">🎾 ${t('Circuit masculin')}</div><div class="opt-desc">${t('Grands Chelems en trois sets gagnants. Des matchs qui peuvent durer cinq heures.')}</div>`,
+  renderPick(TR('VOTRE CIRCUIT'), TR('Sur quel circuit allez-vous écrire votre histoire ?'), [
+    { html:`<div class="opt-name">🎾 ${TR('Circuit masculin')}</div><div class="opt-desc">${TR('Grands Chelems en trois sets gagnants. Des matchs qui peuvent durer cinq heures.')}</div>`,
       go:()=>{ G.draft.gender='m'; pickStyle(); } },
-    { html:`<div class="opt-name">🎾 ${t('Circuit féminin')}</div><div class="opt-desc">${t('Tableaux en deux sets gagnants. Un circuit plus ouvert, où tout peut basculer en une saison.')}</div>`,
+    { html:`<div class="opt-name">🎾 ${TR('Circuit féminin')}</div><div class="opt-desc">${TR('Tableaux en deux sets gagnants. Un circuit plus ouvert, où tout peut basculer en une saison.')}</div>`,
       go:()=>{ G.draft.gender='w'; pickStyle(); } }
   ]);
 }
 function pickStyle(){
   G.back.push(pickGender);
-  renderPick(t('VOTRE STYLE DE JEU'), t('Il détermine vos attributs clés, vos surfaces et votre plafond.'),
+  renderPick(TR('VOTRE STYLE DE JEU'), TR('Il détermine vos attributs clés, vos surfaces et votre plafond.'),
     STYLES.map(s => ({ html:
       `<div class="opt-name">${s.icon} ${s.name}</div><div class="opt-desc">${s.desc}</div>
        <div class="opt-fx">${surfLine(s.surf)}</div>`,
@@ -225,7 +225,7 @@ function surfLine(sf){
 }
 function pickOrigin(){
   G.back.push(pickStyle);
-  renderPick(t('VOTRE FORMATION'), t('D\'où venez-vous, et avec quoi arrivez-vous chez les pros ?'),
+  renderPick(TR('VOTRE FORMATION'), TR('D\'où venez-vous, et avec quoi arrivez-vous chez les pros ?'),
     ORIGINS.map(o => ({ html:
       `<div class="opt-name">${o.icon} ${o.name}</div><div class="opt-desc">${o.desc}</div>
        <div class="opt-fx">${ATTRS.map(a=>a.name.slice(0,3)+' '+o.attrs[a.k]).join(' · ')}</div>`,
@@ -234,8 +234,8 @@ function pickOrigin(){
 
 function pickLife(){
   G.back.push(pickOrigin);
-  renderPick(t('VOTRE HYGIÈNE DE VIE'),
-    t('Onze mois de circuit par an. Comment tenez-vous debout ?'),
+  renderPick(TR('VOTRE HYGIÈNE DE VIE'),
+    TR('Onze mois de circuit par an. Comment tenez-vous debout ?'),
     LIFESTYLES.map(l => ({ html:
       `<div class="opt-name">${l.icon} ${l.name}</div><div class="opt-desc">${l.desc}</div>
        <div class="opt-fx">${Object.entries(l.fx).map(([k,v]) => {
@@ -247,22 +247,22 @@ function pickLife(){
 
 function pickMode(){
   G.back.push(pickLife);
-  renderPick(t('VOTRE RYTHME'), t('Vous pourrez toujours changer d\'avis en cours de carrière.'), [
-    { html:`<div class="opt-name">⚡ ${t('Carrière express')}</div>
-       <div class="opt-desc">${t('Une saison se décide en un plan. Le circuit s\'occupe du reste, et vous ne reprenez la main que sur les matchs qui comptent.')}</div>
-       <div class="opt-fx">${t('Une carrière complète en dix à quinze minutes.')}</div>`,
+  renderPick(TR('VOTRE RYTHME'), TR('Vous pourrez toujours changer d\'avis en cours de carrière.'), [
+    { html:`<div class="opt-name">⚡ ${TR('Carrière express')}</div>
+       <div class="opt-desc">${TR('Une saison se décide en un plan. Le circuit s\'occupe du reste, et vous ne reprenez la main que sur les matchs qui comptent.')}</div>
+       <div class="opt-fx">${TR('Une carrière complète en dix à quinze minutes.')}</div>`,
       go:()=>{ G.draft.mode='express'; launch(); } },
-    { html:`<div class="opt-name">🗓️ ${t('Carrière complète')}</div>
-       <div class="opt-desc">${t('Semaine après semaine. Vous composez votre calendrier, vous choisissez chaque bloc de travail, vous jouez vos matchs jeu par jeu.')}</div>
-       <div class="opt-fx">${t('Plusieurs heures. C\'est le simulateur intégral.')}</div>`,
+    { html:`<div class="opt-name">🗓️ ${TR('Carrière complète')}</div>
+       <div class="opt-desc">${TR('Semaine après semaine. Vous composez votre calendrier, vous choisissez chaque bloc de travail, vous jouez vos matchs jeu par jeu.')}</div>
+       <div class="opt-fx">${TR('Plusieurs heures. C\'est le simulateur intégral.')}</div>`,
       go:()=>{ G.draft.mode='full'; launch(); } }
   ]);
 }
 
 function launch(){
   fullScreen(`<div class="card" style="text-align:center;padding:40px 20px">
-    <div class="week-what">${t('CONSTRUCTION DU CIRCUIT')}</div>
-    <p class="week-why" style="margin-top:10px">${t('1 150 joueurs, 900 tournois, une saison entière jouée à blanc pour que le classement mondial soit réel avant votre arrivée…')}</p></div>`);
+    <div class="week-what">${TR('CONSTRUCTION DU CIRCUIT')}</div>
+    <p class="week-why" style="margin-top:10px">${TR('1 150 joueurs, 900 tournois, une saison entière jouée à blanc pour que le classement mondial soit réel avant votre arrivée…')}</p></div>`);
   setTimeout(() => {
     G.c = Career.create(G.draft);
     G.c.mode = G.draft.mode || 'full';
@@ -304,8 +304,8 @@ function switchMode(to){
 function modeSwitchBtn(){
   const c = G.c;
   return c.mode === 'express'
-    ? `<button class="btn btn-ghost" id="tofull">🗓️ ${t('Passer en carrière complète')}</button>`
-    : `<button class="btn btn-ghost" id="toexp">⚡ ${t('Passer en carrière express')}</button>`;
+    ? `<button class="btn btn-ghost" id="tofull">🗓️ ${TR('Passer en carrière complète')}</button>`
+    : `<button class="btn btn-ghost" id="toexp">⚡ ${TR('Passer en carrière express')}</button>`;
 }
 function wireModeSwitch(){
   const a = $('tofull'), b = $('toexp');
@@ -359,16 +359,16 @@ function tabWeek(){
   if (wk.type === 'injured'){
     setSurface('');
     body(`<div class="week-hero">
-      <div class="week-when">${t('SEMAINE')} ${w.week} · ${w.year}</div>
+      <div class="week-when">${TR('SEMAINE')} ${w.week} · ${w.year}</div>
       <div class="week-what">🩹 ${c.me.injury ? c.me.injury.name : 'Blessé'}</div>
       <div class="week-why">${c.me.injury ? c.me.injury.label : 'Indisponible'} —
         encore <b>${wk.weeks} semaine${wk.weeks>1?'s':''}</b> avant le retour à la compétition.</div>
       <div class="chips"><span class="chip bad">Aucun tournoi possible</span>
         ${def ? `<span class="chip warn">${def} pts perdus cette semaine</span>` : ''}</div>
     </div>
-    <button class="btn btn-primary" id="go">${t('PASSER LA SEMAINE EN RÉÉDUCATION')}</button>
-    <button class="btn btn-ghost" id="ff">⏩ ${t('PASSER PLUSIEURS SEMAINES')}</button>
-    <div class="sec">${t('ÉTAT DU CORPS')}</div>${bodyHtml()}`);
+    <button class="btn btn-primary" id="go">${TR('PASSER LA SEMAINE EN RÉÉDUCATION')}</button>
+    <button class="btn btn-ghost" id="ff">⏩ ${TR('PASSER PLUSIEURS SEMAINES')}</button>
+    <div class="sec">${TR('ÉTAT DU CORPS')}</div>${bodyHtml()}`);
     $('go').onclick = () => { const m = Career.rehabWeek(c); advanceWeek(null, m ? [{txt:m,good:true}] : []); };
     $('ff').onclick = ffScreen;
     return;
@@ -391,9 +391,9 @@ function tabWeek(){
         ${def ? `<span class="chip warn">${def} pts à défendre</span>` : ''}
         ${c.fitness < 45 ? `<span class="chip bad">Fraîcheur ${Math.round(c.fitness)} %</span>` : ''}
       </div></div>
-      <button class="btn btn-primary" id="go">${t('DISPUTER LE TOURNOI')}</button>
-      <button class="btn btn-ghost" id="skip">${t('Renoncer et travailler cette semaine')}</button>
-      <button class="btn btn-ghost" id="ff">⏩ ${t('AVANCE RAPIDE')}</button>
+      <button class="btn btn-primary" id="go">${TR('DISPUTER LE TOURNOI')}</button>
+      <button class="btn btn-ghost" id="skip">${TR('Renoncer et travailler cette semaine')}</button>
+      <button class="btn btn-ghost" id="ff">⏩ ${TR('AVANCE RAPIDE')}</button>
       ${objectiveHtml()}${feedHtml(4)}`);
     $('go').onclick = () => openTournament(t, wk.status);
     $('skip').onclick = () => { Career.clearEntry(c, w.week); setTab('week'); };
@@ -414,7 +414,7 @@ function tabWeek(){
       <span class="chip ${c.money<0?'bad':''}">Trésorerie ${M$(c.money)}</span>
     </div></div>
     ${best ? `<button class="btn btn-accent" id="ins">S'INSCRIRE À ${esc(best.t.name.toUpperCase())}</button>` : ''}
-    <button class="btn btn-primary" id="work">${t('CHOISIR LE TRAVAIL DE LA SEMAINE')}</button>
+    <button class="btn btn-primary" id="work">${TR('CHOISIR LE TRAVAIL DE LA SEMAINE')}</button>
     <button class="btn btn-ghost" id="ff">⏩ AVANCE RAPIDE</button>
     ${objectiveHtml()}${feedHtml(5)}
     <div class="sec">BOÎTE DE RÉCEPTION</div>${inboxHtml(3)}`);
@@ -435,9 +435,9 @@ function exPlan(){
   const ob = c.objective;
 
   let h = `<div class="week-hero">
-      <div class="week-when">${t('SAISON')} ${c.world.year} · ${c.me.age} ${t('ANS')}</div>
-      <div class="week-what">${t('Votre plan pour l\'année')}</div>
-      <div class="week-why">${t('Vous fixez une ligne, le circuit s\'occupe du reste.')}</div>
+      <div class="week-when">${TR('SAISON')} ${c.world.year} · ${c.me.age} ${TR('ANS')}</div>
+      <div class="week-what">${TR('Votre plan pour l\'année')}</div>
+      <div class="week-why">${TR('Vous fixez une ligne, le circuit s\'occupe du reste.')}</div>
       <div class="chips"><span class="chip">#${c.me.rank} mondial</span>
         <span class="chip">Fraîcheur ${Math.round(c.fitness)} %</span>
         <span class="chip">Corps ${Math.round(Career.bodyAvg(c))} %</span>
@@ -445,15 +445,15 @@ function exPlan(){
     ${ob ? `<div class="panel" style="border-left:3px solid var(--warn)">
       <div class="r-t">🎯 ${esc(ob.label)}</div>
       <div class="r-s">Prime de ${M$(ob.reward)} si vous y arrivez.</div></div>` : ''}
-    <div class="sec">${t('OÙ JOUER CETTE ANNÉE')}</div><div id="explans"></div>
-    <div class="sec">${t('QUOI TRAVAILLER')}</div><div id="extr"></div>
+    <div class="sec">${TR('OÙ JOUER CETTE ANNÉE')}</div><div id="explans"></div>
+    <div class="sec">${TR('QUOI TRAVAILLER')}</div><div id="extr"></div>
     <div class="sec">VOTRE ÉQUIPE</div>
     <div class="panel"><div class="r-s">${STAFF_ROLES.map(r => {
         const s = Career.staffOf(c, r.k);
         return `${r.icon} ${esc(s.name)}`;
       }).join(' · ')}<br><span style="color:var(--txt3)">Charges ${M$(Career.weeklyCost(c))} par semaine.</span></div></div>
-    <button class="btn btn-ghost" id="exteam">🧢 ${t('CHANGER MON ÉQUIPE')}</button>
-    <button class="btn btn-primary" id="exgo">${t('LANCER LA SAISON')}</button>
+    <button class="btn btn-ghost" id="exteam">🧢 ${TR('CHANGER MON ÉQUIPE')}</button>
+    <button class="btn btn-primary" id="exgo">${TR('LANCER LA SAISON')}</button>
     ${modeSwitchBtn()}
     ${feedHtml(3)}`;
   fullScreen(h);
@@ -549,8 +549,8 @@ function wireStaffPicks(c, redraw, box){
 function exRun(){
   const c = G.c;
   fullScreen(`<div class="card" style="text-align:center;padding:38px 18px">
-    <div class="week-what">${t('SAISON')} ${c.world.year} — ${t('EN COURS')}</div>
-    <p class="week-why" style="margin-top:8px">${t('Semaine')} ${c.world.week} / ${World.W}…</p></div>`);
+    <div class="week-what">${TR('SAISON')} ${c.world.year} — ${TR('EN COURS')}</div>
+    <p class="week-why" style="margin-top:8px">${TR('Semaine')} ${c.world.week} / ${World.W}…</p></div>`);
   if (window.Stats) Stats.pouls(c);
   setTimeout(() => {
     let r;
@@ -608,8 +608,8 @@ function exKeyMatch(r){
       <div class="week-why">#${opp.rank} mondial · ${opp.age} ans · ${opp.style.name}</div>
     </div>
     ${sc ? scoutHtml(sc) : ''}
-    <div class="sec">${t('VOTRE PLAN DE JEU')}</div><div id="tacbox"></div>
-    <button class="btn btn-primary" id="play">${t('ENTRER SUR LE COURT')}</button>`);
+    <div class="sec">${TR('VOTRE PLAN DE JEU')}</div><div id="tacbox"></div>
+    <button class="btn btn-primary" id="play">${TR('ENTRER SUR LE COURT')}</button>`);
 
   const reco = sc ? sc.tactic : 'balanced';
   if (!G.ui.tacticTouched) G.ui.tactic = reco;
@@ -651,7 +651,7 @@ function exSeasonEnd(r){
   const forts = log.filter(x => x.good).slice(-8);
 
   let h = `<div class="week-hero">
-      <div class="week-when">${t('SAISON')} ${s.year} · ${s.age} ${t('ANS')}</div>
+      <div class="week-when">${TR('SAISON')} ${s.year} · ${s.age} ${TR('ANS')}</div>
       <div class="week-what">#${s.rank} mondial</div>
       <div class="week-why">${move}</div>
       ${s.headline?`<div class="week-why" style="font-style:italic;color:var(--gold);margin-top:6px">📰 ${esc(s.headline)}</div>`:''}
@@ -659,15 +659,15 @@ function exSeasonEnd(r){
         `<span class="chip good">${AWARDS[k].icon} ${AWARDS[k].name}</span>`).join('')}</div>`:''}
     </div>
     <div class="stat-grid">
-      <div class="sg"><b>${s.w}–${s.l}</b><span>${t('BILAN')}</span></div>
-      <div class="sg"><b>${s.titles.length}</b><span>${t('TITRES')}</span></div>
-      <div class="sg"><b>${s.points}</b><span>${t('POINTS')}</span></div>
-      <div class="sg"><b>${M$(s.prize)}</b><span>${t('GAINS')}</span></div>
+      <div class="sg"><b>${s.w}–${s.l}</b><span>${TR('BILAN')}</span></div>
+      <div class="sg"><b>${s.titles.length}</b><span>${TR('TITRES')}</span></div>
+      <div class="sg"><b>${s.points}</b><span>${TR('POINTS')}</span></div>
+      <div class="sg"><b>${M$(s.prize)}</b><span>${TR('GAINS')}</span></div>
     </div>
     ${s.objective?`<div class="panel" style="border-left:3px solid ${s.objective.ok?'var(--good)':'var(--bad)'}">
       <div class="r-t">${s.objective.ok?'✔':'✘'} ${esc(s.objective.label)}</div>
       <div class="r-s">${s.objective.ok?'Objectif atteint — prime versée':'Objectif manqué'}</div></div>`:''}
-    ${forts.length?`<div class="sec">${t('LES MOMENTS DE LA SAISON')}</div><div class="panel">${
+    ${forts.length?`<div class="sec">${TR('LES MOMENTS DE LA SAISON')}</div><div class="panel">${
       forts.map(x => `<div class="draw-line"><span class="dl-r">${x.tier||''}</span>
         <span><span class="dot ${x.surf}"></span> ${esc(x.name)}</span>
         <span class="r-v ${x.res==='VAINQUEUR'?'dl-w':''}">${esc(x.res)}</span></div>`).join('')}</div>`:''}
@@ -676,15 +676,15 @@ function exSeasonEnd(r){
     ${feedHtml(3)}`;
 
   const pr = Career.retirementPressure(c);
-  if (pr) h += `<div class="sec">${t('FIN DE CARRIÈRE ?')}</div>
+  if (pr) h += `<div class="sec">${TR('FIN DE CARRIÈRE ?')}</div>
     <div class="panel" style="border-left:3px solid var(--warn)">
       ${pr.reasons.map(x=>`<div class="scnote">${esc(x)}</div>`).join('')}</div>`;
 
-  h += `<button class="btn btn-primary" id="exnext">${t('SAISON')} ${s.year+1}</button>
-    <button class="btn btn-ghost" id="detail">📊 ${t('VOIR MA PROGRESSION')}</button>
-    <button class="btn btn-ghost" id="exshare">📣 ${t('PARTAGER MA SAISON')}</button>
+  h += `<button class="btn btn-primary" id="exnext">${TR('SAISON')} ${s.year+1}</button>
+    <button class="btn btn-ghost" id="detail">📊 ${TR('VOIR MA PROGRESSION')}</button>
+    <button class="btn btn-ghost" id="exshare">📣 ${TR('PARTAGER MA SAISON')}</button>
     ${modeSwitchBtn()}
-    ${pr?`<button class="btn btn-ghost" id="stop">🎾 ${t('RACCROCHER LA RAQUETTE')}</button>`:''}`;
+    ${pr?`<button class="btn btn-ghost" id="stop">🎾 ${TR('RACCROCHER LA RAQUETTE')}</button>`:''}`;
   fullScreen(h);
   setSurface('');
   wireModeSwitch();
@@ -1113,7 +1113,7 @@ function tabProg(){
       ${curve(cash, { color:'var(--gold)', min:0, h:70 })}
       <div class="chart-x"><span>${first.year}</span><span>total ${M$(c.careerPrize)}</span><span>${last.year}</span></div></div>`;
 
-  h += `<div class="sec">${t('SAISON PAR SAISON')}</div><div class="panel">` +
+  h += `<div class="sec">${TR('SAISON PAR SAISON')}</div><div class="panel">` +
     S.slice().reverse().map(s => `<div class="draw-line">
       <span class="dl-r">${s.year}</span>
       <span>${s.w}V–${s.l}D${s.titles.length?' · '+esc(s.titles.slice(0,2).join(', ')):''}
@@ -1165,7 +1165,7 @@ function tabMe(){
         <span class="r-v">${Object.values(c.awards).reduce((a,b)=>a+b,0)}</span></div>`:''}
     </div>
 
-    ${pal.length?`<div class="sec">${t('PALMARÈS')}</div><div class="panel">${pal.map(p=>
+    ${pal.length?`<div class="sec">${TR('PALMARÈS')}</div><div class="panel">${pal.map(p=>
       `<div class="row"><span class="r-main"><span class="r-t">${p[0]}</span></span><span class="r-v">${p[1]}</span></div>`).join('')}
       ${me.slams.length?`<div class="p-meta">${me.slams.map(s=>s.name+' '+s.year).join(' · ')}</div>`:''}</div>`:''}
 
@@ -1268,7 +1268,7 @@ function davisScreen(){
     h += `<div class="week-hero"><div class="week-what">${st.out ? 'ÉLIMINÉS' :
       (st.stage === 'final' ? 'COUPE DAVIS REMPORTÉE' : 'QUALIFIÉS POUR LA PHASE FINALE')}</div>
       <div class="chips">${st.prize?`<span class="chip good">${M$(st.prize)}</span>`:''}</div></div>
-      <button class="btn btn-primary" id="close">${t('TERMINER LA SEMAINE')}</button>`;
+      <button class="btn btn-primary" id="close">${TR('TERMINER LA SEMAINE')}</button>`;
   } else if (opp){
     const my = MatchEngine.effLevel(c.me, st.t.surf), his = MatchEngine.effLevel(opp, st.t.surf);
     const p = Math.max(1, Math.min(99, Math.round(100 / (1 + Math.pow(10, (his-my)/9)))));
@@ -1317,7 +1317,7 @@ function drawScreen(){
   if (st.done){
     const res = st.out
       ? (st.phase==='quali' ? 'Éliminé en qualifications' : `Éliminé — ${Career.roundName(st, st.round-1)}`)
-      : t('VAINQUEUR DU TOURNOI');
+      : TR('VAINQUEUR DU TOURNOI');
     h += `<div class="week-hero"><div class="week-what">${res}</div>
       <div class="chips"><span class="chip good">${st.pts} points</span>
       <span class="chip good">${M$(st.prize)}</span>
@@ -1357,10 +1357,10 @@ function drawScreen(){
        traiter l'exemption : le mode Express passe par le même resolveRound. */
     h += `<div class="week-hero">
       <div class="week-when">${st.phase==='quali' ? 'QUALIFICATIONS' : Career.roundName(st, st.round).toUpperCase()}</div>
-      <div class="week-what">${t('Exempté de ce tour')}</div>
+      <div class="week-what">${TR('Exempté de ce tour')}</div>
       <div class="week-why">Votre classement vous dispense de ce tour : vous entrerez
         directement au tour suivant, pendant que les autres se fatiguent.</div></div>
-      <button class="btn btn-primary" id="bye">${t('PASSER AU TOUR SUIVANT')}</button>`;
+      <button class="btn btn-primary" id="bye">${TR('PASSER AU TOUR SUIVANT')}</button>`;
   }
   if (st.slots.length) h += pathHtml(st) + drawHtml(st);
   fullScreen(h);
@@ -1388,7 +1388,7 @@ function drawScreen(){
 /* Le parcours du joueur, resume. */
 function pathHtml(st){
   const c = G.c;
-  let h = `<div class="sec">${t('VOTRE PARCOURS')}</div><div class="panel">`;
+  let h = `<div class="sec">${TR('VOTRE PARCOURS')}</div><div class="panel">`;
   let any = false;
   for (let r = 0; r < st.slots.length; r++){
     const cur = st.slots[r], nxt = st.slots[r+1];
@@ -1532,7 +1532,7 @@ function renderMatch(){
     <div class="mh-top">${esc(m.round)} · ${esc(m.tournament)} · ${SURFACES[m.surface].name}</div>
     <div class="mh-vs">
       <div class="mh-p"><b>${esc(a.name)}</b><span>#${a.rank} · ${a.nation.flag}</span></div>
-      <div class="mh-mid">${m.bo5?t('3 sets gagnants'):t('2 sets gagnants')}</div>
+      <div class="mh-mid">${m.bo5?TR('3 sets gagnants'):TR('2 sets gagnants')}</div>
       <div class="mh-p"><b>${esc(b.name)}</b><span>#${b.rank} · ${b.nation.flag}</span></div>
     </div></div>`;
 
@@ -1581,7 +1581,7 @@ function renderMatch(){
     const won = m.winner === 0;
     ctrl.innerHTML = statsHtml(m) +
       `<button class="btn ${won?'btn-primary':'btn-ghost'}" id="next">
-        ${won ? t('VICTOIRE — CONTINUER') : t('DÉFAITE — CONTINUER')}</button>`;
+        ${won ? TR('VICTOIRE — CONTINUER') : TR('DÉFAITE — CONTINUER')}</button>`;
     $('next').onclick = () => {
       c.fitness = Math.max(0, c.fitness - Career.matchCost(m.minutes));
       const inj = Career.matchWear(c, m.minutes, m.surface);
@@ -1618,9 +1618,9 @@ function renderMatch(){
     };
   } else {
     ctrl.innerHTML = `<div class="ctrl-row">
-      <button class="btn btn-primary" id="g1">${G.exMatch ? t('POINT SUIVANT QUI COMPTE') : t('JEU SUIVANT')}</button>
-      <button class="btn btn-ghost" id="gs">${t('JOUER LE SET')}</button></div>
-      <button class="btn btn-ghost" id="ga">${t('SIMULER LE RESTE DU MATCH')}</button>
+      <button class="btn btn-primary" id="g1">${G.exMatch ? TR('POINT SUIVANT QUI COMPTE') : TR('JEU SUIVANT')}</button>
+      <button class="btn btn-ghost" id="gs">${TR('JOUER LE SET')}</button></div>
+      <button class="btn btn-ghost" id="ga">${TR('SIMULER LE RESTE DU MATCH')}</button>
       <div class="chips"><span class="chip">Fatigue vous ${Math.round(m.fatigue[0])} · lui ${Math.round(m.fatigue[1])}</span>
       <span class="chip" id="tacnow">Plan : ${TACTICS.find(t=>t.id===m.tac[0]).name}</span></div>`;
     $('g1').onclick = () => {
@@ -1807,13 +1807,13 @@ function endCareer(){
       `<div class="draw-line"><span class="dl-r">${s.age} ans</span>
        <span>${s.titles.length ? esc(s.titles.slice(0,2).join(', ')) + (s.titles.length>2?` +${s.titles.length-2}`:'') : '<span style="color:var(--txt3)">—</span>'}</span>
        <span class="r-v">#${s.rank}</span></div>`).join('')}</div>
-    ${got.length?`<div class="sec">${t('NOUVEAUX BADGES')}</div><div class="badge-grid">${got.map(id=>{
+    ${got.length?`<div class="sec">${TR('NOUVEAUX BADGES')}</div><div class="badge-grid">${got.map(id=>{
       const b = BADGES.find(x=>x.id===id);
       return `<div class="badge"><span class="bi">${b.icon}</span><div class="bn">${b.name}</div>
         <div class="bd">${b.desc}</div></div>`; }).join('')}</div>`:''}
-    <button class="btn btn-primary" id="share">📣 ${t('PARTAGER CETTE CARRIÈRE')}</button>
-    <button class="btn btn-ghost" id="again">${t('NOUVELLE CARRIÈRE')}</button>
-    <button class="btn btn-ghost" id="hm">${t('MENU PRINCIPAL')}</button>`);
+    <button class="btn btn-primary" id="share">📣 ${TR('PARTAGER CETTE CARRIÈRE')}</button>
+    <button class="btn btn-ghost" id="again">${TR('NOUVELLE CARRIÈRE')}</button>
+    <button class="btn btn-ghost" id="hm">${TR('MENU PRINCIPAL')}</button>`);
   $('share').onclick = () => shareScreen(c, endCareer);
   $('again').onclick = pickNation;
   $('hm').onclick = home;
@@ -1831,17 +1831,17 @@ function shareScreen(c, retour){
       <div class="week-what">${esc(r.nom)}</div>
       <div class="week-why">${esc(Share.accroche(r))}</div></div>
 
-    <div class="sec">${t('CE QUI SERA ENVOYÉ')}</div>
+    <div class="sec">${TR('CE QUI SERA ENVOYÉ')}</div>
     <div class="panel"><pre class="share-block" id="sh-txt">${esc(txt)}</pre></div>
 
-    <button class="btn btn-primary" id="sh-go">📣 ${t('PARTAGER')}</button>
-    <button class="btn btn-ghost" id="sh-copy">📋 ${t('COPIER LE TEXTE')}</button>
-    <button class="btn btn-ghost" id="sh-img">🖼️ ${t('TÉLÉCHARGER L\'IMAGE')}</button>
+    <button class="btn btn-primary" id="sh-go">📣 ${TR('PARTAGER')}</button>
+    <button class="btn btn-ghost" id="sh-copy">📋 ${TR('COPIER LE TEXTE')}</button>
+    <button class="btn btn-ghost" id="sh-img">🖼️ ${TR('TÉLÉCHARGER L\'IMAGE')}</button>
 
-    <div class="sec">${t('ENVOYER VERS')}</div>
+    <div class="sec">${TR('ENVOYER VERS')}</div>
     <div class="chips" id="sh-nets"></div>
 
-    <div class="sec">${t('APERÇU DE L\'IMAGE')}</div>
+    <div class="sec">${TR('APERÇU DE L\'IMAGE')}</div>
     <div class="panel" style="text-align:center"><div id="sh-prev"></div></div>`, retour);
 
   const flash = (id, msg) => {

@@ -102,4 +102,7 @@ brancherSelecteur();
 return { t, langue: L, choisir };
 })();
 window.I18N = I18N;
-window.t = I18N.t;      /* la leçon window.Stats est retenue */
+/* TR et non t : le jeu regorge de variables locales nommees t (les tournois),
+   et un t global se faisait eclipser puis appeler comme une fonction. */
+window.TR = I18N.t;
+window.t = window.t || I18N.t;   /* filet pour tout appel retardataire */
