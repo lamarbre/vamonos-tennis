@@ -117,7 +117,17 @@ function voir(nom){
 }
 function premierMatch(){ if (!matchJoue){ matchJoue = 1; if (partie) envoi('/api/partie', { id: partie, matchJoue }); } }
 
-function finPartie(c, comment){ pouls(c, comment || 'terminée'); partie = null; }
+function finPartie(c, comment, score){
+  pouls(c, comment || 'terminée');
+  /* Le score de carrière est ce qui classe les vrais joueurs entre eux.
+     On envoie aussi le nom du joueur fictif : c'est lui qui apparaît au tableau. */
+  if (partie && score != null){
+    envoi('/api/partie', { id: partie, score: Math.round(score),
+      joueurNom: c && c.me ? String(c.me.name).slice(0, 40) : '',
+      nationCode: c && c.me && c.me.nation ? c.me.nation.code : '' }, true);
+  }
+  partie = null;
+}
 
 function evt(type, valeur){ envoi('/api/evt', { partie, type, valeur: valeur || '' }); }
 

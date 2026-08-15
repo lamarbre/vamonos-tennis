@@ -6,7 +6,7 @@
 const Career = (() => {
 
 const clamp = (v,a,b) => v<a?a:v>b?b:v;
-const R = () => Math.random();
+const R = () => (typeof Alea !== 'undefined' ? Alea.R() : Math.random());
 const ri = (a,b) => Math.floor(a + R()*(b-a+1));
 const rand = (a,b) => a + R()*(b-a);
 const pick = a => a[Math.floor(R()*a.length)];

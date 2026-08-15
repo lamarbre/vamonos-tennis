@@ -39,6 +39,7 @@ function flagsRender(){
    et quand l'onglet passe en arrière-plan. Jamais pendant un rendu. */
 let saveTimer = null;
 function autosave(now){
+  if (G.c && G.c.defi) return;   // un défi ne s'enregistre jamais par-dessus la carrière
   if (!G.c || G.c.retired) return;
   clearTimeout(saveTimer);
   if (now) { Save.write(G.c); return; }
@@ -122,6 +123,8 @@ function home(){
   $('btn-start').onclick = pickPseudo;
   $('btn-badges').onclick = () => fullScreen(badgesHtml(), home);
   $('btn-pantheon').onclick = () => fullScreen(pantheonHtml(), home);
+  if ($('btn-mondial')) $('btn-mondial').onclick = () => classementScreen(null, home);
+  if ($('btn-defi')) $('btn-defi').onclick = defiScreen;
 
   /* Reprendre une carrière venue d'un autre appareil, et avertir quand ce navigateur
      ne peut rien retenir — le pire scénario est de découvrir la perte après coup. */
@@ -686,6 +689,7 @@ function exKeyMatch(r){
 /* Bilan de fin de saison, condensé. */
 function exSeasonEnd(r){
   const c = G.c, s = r.season, log = r.log || [];
+  if (c && c.defi && s) return finDefi(c, s);     // un défi = une saison, point.
   if (window.Stats) Stats.voir('bilan-saison');
   if (!s) return exPlan();
   const prev = c.seasons.length > 1 ? c.seasons[c.seasons.length-2] : null;
@@ -1817,10 +1821,10 @@ function seasonScreen(s){
 function endCareer(){
   const c = G.c;
   c.retired = true;
-  if (window.Stats) Stats.finPartie(c, c.flags && c.flags.ruine ? 'ruine' : 'terminée');
   Save.clear();
   const got = Career.checkBadges(c);
   const score = Career.careerScore(c);
+  if (window.Stats) Stats.finPartie(c, c.flags && c.flags.ruine ? 'ruine' : 'terminée', score);
   const tier = Career.tierFor(score);
   const pct = Career.percentile(score);
 
@@ -1861,13 +1865,136 @@ function endCareer(){
       return `<div class="badge"><span class="bi">${b.icon}</span><div class="bn">${b.name}</div>
         <div class="bd">${b.desc}</div></div>`; }).join('')}</div>`:''}
     <button class="btn btn-primary" id="share">📣 ${TR('PARTAGER CETTE CARRIÈRE')}</button>
+    <button class="btn btn-ghost" id="mondial">🌍 ${TR('CLASSEMENT DES VRAIS JOUEURS')}</button>
     <button class="btn btn-ghost" id="again">${TR('NOUVELLE CARRIÈRE')}</button>
     <button class="btn btn-ghost" id="hm">${TR('MENU PRINCIPAL')}</button>
     ${partenaireHtml()}`);
   brancherPartenaire();
+  $('mondial').onclick = () => classementScreen(score, endCareer);
   $('share').onclick = () => shareScreen(c, endCareer);
   $('again').onclick = pickNation;
   $('hm').onclick = home;
+}
+
+/* ══════════════════ DÉFI DE LA SEMAINE ══════════════════
+   Le mécanisme de Wordle appliqué au jeu : tout le monde reçoit LE MÊME monde
+   et LE MÊME joueur — la graine est la semaine ISO en cours — joue UNE saison
+   Express, et compare son score. Une tentative comptabilisée par joueur et par
+   semaine ; rejouer est permis mais n'améliore pas le score envoyé. */
+function semaineISO(d){
+  d = d || new Date();
+  const x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const jour = x.getUTCDay() || 7;
+  x.setUTCDate(x.getUTCDate() + 4 - jour);
+  const debut = new Date(Date.UTC(x.getUTCFullYear(), 0, 1));
+  const n = Math.ceil(((x - debut) / 864e5 + 1) / 7);
+  return x.getUTCFullYear() + '-S' + String(n).padStart(2, '0');
+}
+function defiScreen(){
+  const sem = semaineISO();
+  const deja = (() => { try { return JSON.parse(localStorage.getItem('vamonos_defi_' + sem) || 'null'); } catch (e){ return null; } })();
+  if (window.Stats) Stats.voir('defi');
+  fullScreen(`<div class="week-hero">
+      <div class="week-when">${TR('DÉFI DE LA SEMAINE')} · ${sem}</div>
+      <div class="week-what">${TR('Même joueur, même circuit, une saison')}</div>
+      <div class="week-why">${TR('Tout le monde reçoit le même joueur et le même monde cette semaine. Une saison express, un score, un classement. Lundi prochain, tout change.')}</div></div>
+    ${deja ? `<div class="panel" style="border-left:3px solid var(--marque-clair)">
+      <div class="r-t">${TR('Votre score cette semaine')} : <b>${deja.score}</b> ${TR('pts')}</div>
+      <div class="r-s">${esc(deja.nom)} · #${deja.rang} · ${deja.titres} ${TR('titres')}</div></div>` : ''}
+    <button class="btn btn-primary" id="dgo">🎯 ${deja ? TR('REJOUER LE DÉFI') : TR('RELEVER LE DÉFI')}</button>
+    <div id="dcl"><div class="empty">${TR('Chargement du classement…')}</div></div>`, home);
+  $('dgo').onclick = () => lancerDefi(sem);
+  fetch('/api/defi?s=' + encodeURIComponent(sem)).then(r => r.json()).then(d => {
+    const rows = d.top || [];
+    $('dcl').innerHTML = `<div class="sec">${TR('CLASSEMENT DE LA SEMAINE')} · ${d.total || 0} ${TR('participants')}</div>
+      <div class="panel">` + (rows.length ? rows.map((r, i) => `<div class="draw-line${window.Stats && r.joueur === Stats.id ? ' me' : ''}">
+        <span class="dl-r">${i + 1}</span><span><b>${esc(r.pseudo || '—')}</b>
+        <span style="font-size:11px;color:var(--txt2)"> · #${r.rang || '—'} · ${r.titres || 0} ${TR('titres')}</span></span>
+        <span class="r-v">${r.score}</span></div>`).join('')
+        : `<div class="empty">${TR('Personne n\'a encore joué cette semaine. À vous.')}</div>`) + `</div>`;
+  }).catch(() => { $('dcl').innerHTML = ''; });
+}
+function lancerDefi(sem){
+  if (window.Alea) Alea.semer('vamonos-' + sem);
+  // Le joueur imposé : tiré de la graine, donc identique pour tous.
+  const pick = a => a[Math.floor(Alea.R() * a.length)];
+  G.draft = { nation: pick(NATIONS), gender: Alea.R() < 0.5 ? 'm' : 'w',
+              style: pick(STYLES), origin: pick(ORIGINS), lifestyle: pick(LIFESTYLES),
+              mode: 'express', defi: sem };
+  if (window.Stats) Stats.evt('defi_lance', sem);
+  fullScreen(`<div class="card" style="text-align:center;padding:40px 20px">
+    <div class="week-what">${TR('CONSTRUCTION DU CIRCUIT')}</div>
+    <p class="week-why" style="margin-top:10px">${TR('Le même pour tout le monde cette semaine.')}</p></div>`);
+  setTimeout(() => {
+    G.c = Career.create(G.draft);
+    G.c.mode = 'express'; G.c.defi = sem;
+    if (window.Stats) Stats.nouvellePartie(G.c, G.draft);
+    G.tab = 'week'; G.back = [];
+    // On NE sauvegarde PAS le défi par-dessus la carrière du joueur.
+    Career.expressBegin(G.c, 'points', 'faible');
+    exRun();
+  }, 60);
+}
+/* Fin d'un défi : score, envoi, retour au tableau. Appelé par exSeasonEnd. */
+function finDefi(c, s){
+  if (window.Alea) Alea.semer(null);          // on rend le hasard au monde normal
+  const score = Math.round(Career.careerScore(c) * 10 + Math.max(0, 1000 - (s.rank || 1000)));
+  const rec = { score, nom: c.me.name, rang: s.rank, titres: s.titles.length, quand: Date.now() };
+  const cle = 'vamonos_defi_' + c.defi;
+  let ancien = null; try { ancien = JSON.parse(localStorage.getItem(cle) || 'null'); } catch (e){}
+  if (!ancien || score > ancien.score){ try { localStorage.setItem(cle, JSON.stringify(rec)); } catch (e){} }
+  if (window.Stats) Stats.evt('defi_score', c.defi + ':' + score);
+  fetch('/api/defi', { method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ joueur: window.Stats ? Stats.id : '', semaine: c.defi, score,
+      nom: c.me.name, rang: s.rank, titres: s.titles.length,
+      pseudo: (window.Stats && Stats.pseudo) || (localStorage.getItem('vamonos_pseudo') || '') }) }).catch(() => {});
+  fullScreen(`<div class="week-hero">
+      <div class="week-when">${TR('DÉFI')} · ${c.defi}</div>
+      <div class="week-what">${score} ${TR('pts')}</div>
+      <div class="week-why">${esc(c.me.name)} · #${s.rank} ${TR('mondial')} · ${s.titles.length} ${TR('titres')} · ${s.w}–${s.l}</div>
+      ${s.headline ? `<div class="week-why" style="font-style:italic;color:var(--gold);margin-top:6px">📰 ${esc(s.headline)}</div>` : ''}</div>
+    <div class="panel"><div class="r-s">${TR('Le score compte les titres, le classement final et la solidité de la saison. Rejouer est permis — seul votre meilleur score reste.')}</div></div>
+    <button class="btn btn-primary" id="dfin">🏆 ${TR('VOIR LE CLASSEMENT')}</button>
+    <button class="btn btn-ghost" id="dpartage">📣 ${TR('PARTAGER MON SCORE')}</button>`);
+  G.c = null;
+  $('dfin').onclick = defiScreen;
+  $('dpartage').onclick = () => {
+    const txt = `🎯 Vamonos Tennis — ${TR('Défi')} ${c.defi}\n${score} ${TR('pts')} · #${s.rank} · ${s.titles.length} ${TR('titres')}\n${TR('Même joueur, même circuit : à toi.')}\nhttps://www.vamonostennis.com/`;
+    if (navigator.share) navigator.share({ text: txt }).catch(() => {});
+    else { Share.copier(txt); $('dpartage').textContent = '✅ ' + TR('COPIÉ'); }
+  };
+}
+
+/* ══════════════════ CLASSEMENT MONDIAL DES VRAIS JOUEURS ══════════════════
+   Les meilleures carrières terminées, tous joueurs confondus. Le serveur ne
+   retient que les parties dont il a suivi la progression — une sauvegarde
+   bricolée n'y entre pas. Sans compte : c'est le pseudo qui apparaît. */
+function classementScreen(monScore, retour){
+  fullScreen(`<div class="week-hero">
+      <div class="week-when">${TR('CLASSEMENT MONDIAL')}</div>
+      <div class="week-what">${TR('Les vrais joueurs')}</div>
+      <div class="week-why">${TR('Les meilleures carrières terminées, tous joueurs confondus. Le score récompense les titres, le classement atteint et la longévité.')}</div></div>
+    <div id="cl-corps"><div class="empty">${TR('Chargement…')}</div></div>`, retour);
+  fetch('/api/classement').then(r => r.json()).then(d => {
+    const rows = d.top || [];
+    const moi = window.Stats ? Stats.id : null;
+    let h = '';
+    if (monScore != null && d.rangDe != null)
+      h += `<div class="panel" style="border-left:3px solid var(--marque-clair)">
+        <div class="r-t">${TR('Votre carrière')} : ${monScore} ${TR('pts')}</div>
+        <div class="r-s">${TR('Meilleure que')} <b>${d.pct}%</b> ${TR('des carrières terminées')}
+        · ${TR('rang')} <b>#${d.rangDe}</b> ${TR('sur')} ${d.total}</div></div>`;
+    h += `<div class="panel">` + (rows.length ? rows.map((r, i) => `
+      <div class="draw-line${r.joueur === moi ? ' me' : ''}">
+        <span class="dl-r">${i + 1}</span>
+        <span><b>${esc(r.pseudo || '—')}</b>
+          <span style="color:var(--txt3)"> · ${esc(r.nom || '')} ${r.code ? '<span class=\"natcode\">' + esc(r.code) + '</span>' : ''}</span><br>
+          <span style="font-size:11px;color:var(--txt2)">#${r.best || '—'} ${TR('au mieux')} · ${r.titres || 0} ${TR('titres')}${r.chelems ? ' · ' + r.chelems + ' GC' : ''} · ${r.saisons || 0} ${TR('saisons')}</span></span>
+        <span class="r-v">${r.score}</span></div>`).join('')
+      : `<div class="empty">${TR('Aucune carrière terminée pour l\'instant. Soyez le premier.')}</div>`) + `</div>
+      <div class="p-meta">${TR('Seules les carrières suivies de bout en bout comptent. Mis à jour en continu.')}</div>`;
+    $('cl-corps').innerHTML = h;
+  }).catch(() => { $('cl-corps').innerHTML = `<div class="empty">${TR('Classement indisponible.')}</div>`; });
 }
 
 /* ══════════════════ PARTENAIRE ══════════════════

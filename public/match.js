@@ -7,7 +7,7 @@
 const MatchEngine = (() => {
 
 const clamp = (v,a,b) => v<a?a:v>b?b:v;
-const R = () => Math.random();
+const R = () => (typeof Alea !== 'undefined' ? Alea.R() : Math.random());
 const ri = (a,b) => Math.floor(a + R()*(b-a+1));
 
 /* ───────────── Indices de jeu dérivés des attributs ───────────── */
@@ -464,7 +464,7 @@ function effLevel(p, surf){
 }
 function quickWin(a, b, surf){
   const p = 1 / (1 + Math.pow(10, (effLevel(b, surf) - effLevel(a, surf)) / 9));
-  return Math.random() < p;
+  return R() < p;
 }
 /* Score plausible pour un match non joué, à partir de l'écart de niveau. */
 function quickScore(a, b, surf, bo5){
@@ -474,14 +474,14 @@ function quickScore(a, b, surf, bo5){
   let wa = 0, wb = 0;
   while (wa < need && wb < need){
     const pw = 1 / (1 + Math.pow(10, -d / 7));
-    if (Math.random() < pw){ wa++; sets.push(closeSet(true, d)); }
+    if (R() < pw){ wa++; sets.push(closeSet(true, d)); }
     else { wb++; sets.push(closeSet(false, d)); }
   }
   return sets.join(' ');
 }
 function closeSet(aWins, d){
   const gap = Math.abs(d);
-  const r = Math.random();
+  const r = R();
   let loser;
   if (gap > 8) loser = r < .45 ? 2 : r < .8 ? 3 : 4;
   else if (gap > 4) loser = r < .3 ? 3 : r < .7 ? 4 : 5;
