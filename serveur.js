@@ -64,7 +64,8 @@ db.exec(`
     meilleur_rang INTEGER, dernier_rang INTEGER, titres INTEGER DEFAULT 0,
     chelems INTEGER DEFAULT 0, age_fin INTEGER, gains REAL DEFAULT 0,
     secondes INTEGER DEFAULT 0, actions INTEGER DEFAULT 0,
-    abandon_an INTEGER, abandon_sem INTEGER
+    abandon_an INTEGER, abandon_sem INTEGER,
+    ecran TEXT, match_joue INTEGER DEFAULT 0
   );
   CREATE TABLE IF NOT EXISTS evenements (
     id INTEGER PRIMARY KEY AUTOINCREMENT, joueur_id TEXT, partie_id TEXT,
@@ -75,6 +76,10 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS i_evt_type       ON evenements(type, quand);
 `);
 
+/* Migration douce : les colonnes ajoutees apres la mise en ligne. */
+for (const col of ['ecran TEXT', 'match_joue INTEGER DEFAULT 0']){
+  try { db.exec('ALTER TABLE parties ADD COLUMN ' + col); } catch (e){ /* deja la */ }
+}
 const q = (sql, ...a) => db.prepare(sql).all(...a);
 const un = (sql, ...a) => db.prepare(sql).get(...a);
 const run = (sql, ...a) => db.prepare(sql).run(...a);
@@ -110,16 +115,24 @@ function api(req, res, url, corps){
           String(d.style || '').slice(0, 30), String(d.origine || '').slice(0, 40),
           String(d.hygiene || '').slice(0, 40), Number(d.potentiel) || null);
     } else {
-      run(`UPDATE parties SET maj=?, saisons=?, semaines=?, meilleur_rang=?, dernier_rang=?,
-             titres=?, chelems=?, gains=?, secondes=?, actions=?, mode=COALESCE(?,mode),
-             abandon_an=?, abandon_sem=?
-           WHERE id=?`,
-          now(), Number(d.saisons) || 0, Number(d.semaines) || 0,
-          Number(d.meilleur) || null, Number(d.rang) || null,
-          Number(d.titres) || 0, Number(d.chelems) || 0, Number(d.gains) || 0,
-          Number(d.secondes) || 0, Number(d.actions) || 0,
-          d.mode ? String(d.mode).slice(0, 10) : null,
-          Number(d.an) || null, Number(d.sem) || null, id);
+      // Un ping partiel (ecran seul, premier match seul) ne doit pas ecraser le reste.
+      if (d.saisons != null || d.secondes != null){
+        run(`UPDATE parties SET maj=?, saisons=?, semaines=?, meilleur_rang=?, dernier_rang=?,
+               titres=?, chelems=?, gains=?, secondes=?, actions=?, mode=COALESCE(?,mode),
+               abandon_an=?, abandon_sem=?,
+               ecran=COALESCE(?,ecran), match_joue=MAX(match_joue, ?)
+             WHERE id=?`,
+            now(), Number(d.saisons) || 0, Number(d.semaines) || 0,
+            Number(d.meilleur) || null, Number(d.rang) || null,
+            Number(d.titres) || 0, Number(d.chelems) || 0, Number(d.gains) || 0,
+            Number(d.secondes) || 0, Number(d.actions) || 0,
+            d.mode ? String(d.mode).slice(0, 10) : null,
+            Number(d.an) || null, Number(d.sem) || null,
+            d.ecran ? String(d.ecran).slice(0, 40) : null, Number(d.matchJoue) || 0, id);
+      } else {
+        run(`UPDATE parties SET maj=?, ecran=COALESCE(?,ecran), match_joue=MAX(match_joue, ?) WHERE id=?`,
+            now(), d.ecran ? String(d.ecran).slice(0, 40) : null, Number(d.matchJoue) || 0, id);
+      }
       if (d.statut) run('UPDATE parties SET statut=?, fin=?, age_fin=? WHERE id=?',
                         String(d.statut).slice(0, 20), now(), Number(d.age) || null, id);
     }
@@ -165,6 +178,20 @@ function stats(){
     /* Là où les gens décrochent : la statistique la plus utile pour le jeu. */
     abandons:  q(`SELECT saisons s, COUNT(*) n FROM parties
                   WHERE statut='en cours' AND maj < ? GROUP BY s ORDER BY s LIMIT 20`, now() - 2 * 864e5),
+
+    /* Le tunnel : ou exactement les 43 % de la saison 0 s'arretent. */
+    ecrans:    q(`SELECT COALESCE(NULLIF(ecran,''),'?') k, COUNT(*) n FROM parties
+                  WHERE statut='en cours' AND maj < ? AND saisons=0
+                  GROUP BY k ORDER BY n DESC LIMIT 14`, now() - 2 * 864e5),
+    tunnel:    q(`SELECT valeur k, COUNT(DISTINCT joueur_id) n FROM evenements
+                  WHERE type='ecran' AND valeur LIKE 'creation:%' AND quand > ?
+                  GROUP BY k ORDER BY n DESC`, now() - 30 * 864e5),
+    premierMatch: un(`SELECT
+        SUM(CASE WHEN match_joue=1 THEN 1 ELSE 0 END) avec,
+        SUM(CASE WHEN match_joue=0 THEN 1 ELSE 0 END) sans,
+        SUM(CASE WHEN match_joue=1 AND statut='en cours' AND maj < ? THEN 1 ELSE 0 END) avecAbandon,
+        SUM(CASE WHEN match_joue=0 AND statut='en cours' AND maj < ? THEN 1 ELSE 0 END) sansAbandon
+      FROM parties WHERE debut > ?`, now() - 2*864e5, now() - 2*864e5, now() - 30*864e5),
 
     /* Ce qui paie les serveurs. */
     sponsorVu:   un(`SELECT COUNT(*) c FROM evenements WHERE type='sponsor_vu'`).c,
@@ -269,6 +296,21 @@ ${s.parJour.length ? '' : '<div class="vide">aucune donnée</div>'}
 <h2>Où les gens décrochent (parties abandonnées, par saison atteinte)</h2>
 ${barres(s.abandons.map(r => ({ k:'saison ' + r.s, n:r.n })), 'k',
          s.abandons.reduce((a, r) => a + r.n, 0))}
+
+<h2>Le tunnel de création — jusqu'où vont les nouveaux (30 jours)</h2>
+${barres(s.tunnel.map(r => ({ k:r.k.replace('creation:',''), n:r.n })), 'k',
+         Math.max(1, ...s.tunnel.map(r => r.n)))}
+
+<h2>Dernier écran vu par ceux qui partent en saison 0</h2>
+${barres(s.ecrans, 'k', s.ecrans.reduce((a, r) => a + r.n, 0))}
+
+<h2>Le premier match — jouer à la main change-t-il la rétention ?</h2>
+<div class="grid">
+  <div class="k"><b>${s.premierMatch.avec || 0}</b><span>ont joué un match</span></div>
+  <div class="k"><b>${s.premierMatch.avec ? Math.round((s.premierMatch.avecAbandon||0)/s.premierMatch.avec*100) : 0} %</b><span>abandon parmi eux</span></div>
+  <div class="k"><b>${s.premierMatch.sans || 0}</b><span>jamais joué de match</span></div>
+  <div class="k"><b class="no">${s.premierMatch.sans ? Math.round((s.premierMatch.sansAbandon||0)/s.premierMatch.sans*100) : 0} %</b><span>abandon parmi eux</span></div>
+</div>
 
 <h2>Réussite des joueurs</h2>
 <div class="grid">

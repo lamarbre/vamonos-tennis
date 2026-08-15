@@ -87,6 +87,7 @@ function courtSvg(surf, opt){
 function show(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   $(id).classList.add('active');
+  if (window.Stats) Stats.voir(id === 'sc-career' ? 'onglet:' + G.tab : id);
   window.scrollTo({ top:0, behavior:'instant' });
 }
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => {
@@ -166,14 +167,31 @@ function pickPseudo(){
       <div class="week-why">${TR('Ce pseudo accompagnera vos carrières. Vous pourrez le changer plus tard.')}</div></div>
     <input id="pseudo" class="champ" type="text" maxlength="24" autocomplete="nickname"
            placeholder="${TR('Votre pseudo')}" value="${esc(actuel)}">
-    <button class="btn btn-primary" id="pgo">${TR('CONTINUER')}</button>
+    <button class="btn btn-primary" id="prapide">⚡ ${TR('DÉPART RAPIDE')}</button>
+    <p class="p-meta" style="margin:-4px 0 10px">${TR('Le jeu tire un joueur pour vous et lance une saison express. Vous jouez dans dix secondes.')}</p>
+    <button class="btn btn-ghost" id="pgo">🎾 ${TR('CRÉER MON JOUEUR MOI-MÊME')}</button>
     <p class="p-meta" style="margin-top:14px">${TR('Aucun compte, aucun mot de passe, aucune adresse e-mail. Le jeu retient seulement ce pseudo et le déroulé de vos parties.')}</p>`, home);
 
   const champ = $('pseudo');
-  const partir = () => {
+  const nommer = () => {
     const v = (champ.value || '').trim().slice(0, 24);
     if (window.Stats) Stats.bonjour(v || 'Anonyme');
-    pickNation();
+  };
+  const partir = () => { nommer(); pickNation(); };
+  /* Départ rapide : 43 % des abandons se produisaient avant la fin de la première
+     saison, et neuf écrans séparaient l'arrivée du premier point joué. Ici on tire
+     un joueur crédible et on part en Express — le chemin long reste à un clic. */
+  $('prapide').onclick = () => {
+    nommer();
+    if (window.Stats) Stats.evt('depart_rapide');
+    const langue = (window.I18N && I18N.langue) || 'fr';
+    const natCode = langue === 'es' ? 'ESP' : langue === 'en' ? 'GBR' : 'FRA';
+    const nation = NATIONS.find(n => n.code === natCode) || NATIONS[0];
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    G.draft = { nation, gender: Math.random() < 0.5 ? 'm' : 'w',
+                style: pick(STYLES), origin: pick(ORIGINS), lifestyle: pick(LIFESTYLES),
+                mode: 'express', rapide: true };
+    launch();
   };
   $('pgo').onclick = partir;
   champ.onkeydown = e => { if (e.key === 'Enter') partir(); };
@@ -181,6 +199,7 @@ function pickPseudo(){
 }
 function renderPick(title, sub, items, grid){
   $('pick-title').textContent = title;
+  if (window.Stats) Stats.voir('creation:' + title.slice(0, 24));
   $('pick-sub').textContent = sub;
   const l = $('pick-list');
   l.className = grid ? 'pick-list grid-nat' : 'pick-list';
@@ -269,9 +288,32 @@ function launch(){
     if (window.Stats) Stats.nouvellePartie(G.c, G.draft);
     G.tab = 'week'; G.back = [];
     autosave(true);
-    if (G.c.mode === 'express') return exPlan();
+    if (G.c.mode === 'express'){
+      if (G.draft && G.draft.rapide) return exRapideIntro();
+      return exPlan();
+    }
     setTab('week');
   }, 60);
+}
+
+/* Le seul écran entre le clic « Départ rapide » et le jeu : qui est le joueur,
+   en trois lignes, et un bouton. Le plan est pré-choisi (chasser les points, la
+   faiblesse du moment) — c'est le meilleur plan pour un débutant, mesuré. */
+function exRapideIntro(){
+  const c = G.c, me = c.me;
+  if (window.Stats) Stats.voir('depart-rapide');
+  fullScreen(`<div class="week-hero">
+      <div class="week-when">${TR('VOTRE JOUEUR')}</div>
+      <div class="week-what">${esc(me.name)} ${me.nation.flag}</div>
+      <div class="week-why">${me.age} ${TR('ans')} · ${esc(me.style.name)} · ${esc(me.origin ? me.origin.name : '')}<br>
+        ${TR('Talent')} ${potStars(me.pot)} · #${me.rank} ${TR('mondial')}</div>
+      <div class="chips"><span class="chip">${TR('Plan')} : ${esc(SEASON_PLANS[0].name)}</span>
+        <span class="chip">${TR('Travail')} : ${esc((TRAIN_AXES.find(a => a.id === 'faible') || TRAIN_AXES[0]).name)}</span></div></div>
+    <div class="panel"><div class="r-s">${TR('Le circuit va dérouler votre première saison. Vous reprendrez la main sur les matchs qui comptent — et vous pourrez tout régler ensuite, du plan à l\'équipe.')}</div></div>
+    <button class="btn btn-primary" id="rgo">🎾 ${TR('C\'EST PARTI')}</button>
+    <button class="btn btn-ghost" id="rplan">${TR('Je préfère choisir mon plan')}</button>`);
+  $('rgo').onclick = () => { Career.expressBegin(c, 'points', 'faible'); exRun(); };
+  $('rplan').onclick = exPlan;
 }
 
 /* ══════════════════ CHANGEMENT DE RYTHME ══════════════════
@@ -428,6 +470,7 @@ function tabWeek(){
 
 function exPlan(){
   const c = G.c;
+  if (window.Stats) Stats.voir('plan-saison');
   G.ui.exPlan = G.ui.exPlan || 'points';
   // On garde une compatibilité avec les parties commencées avant les axes de travail :
   // un ancien identifiant de bloc n'est plus une valeur valide ici.
@@ -633,6 +676,7 @@ function exKeyMatch(r){
     });
     m.maxMoments = m.bo5 ? 4 : 3;
     G.match = m; G.exMatch = true;
+    if (window.Stats){ Stats.premierMatch(); Stats.voir('match'); }
     MatchEngine.playAll(m);       // on file jusqu'au premier point qui compte
     renderMatch();
     show('sc-match');
@@ -642,6 +686,7 @@ function exKeyMatch(r){
 /* Bilan de fin de saison, condensé. */
 function exSeasonEnd(r){
   const c = G.c, s = r.season, log = r.log || [];
+  if (window.Stats) Stats.voir('bilan-saison');
   if (!s) return exPlan();
   const prev = c.seasons.length > 1 ? c.seasons[c.seasons.length-2] : null;
   const move = prev ? (s.rank < prev.rank
@@ -684,10 +729,12 @@ function exSeasonEnd(r){
     <button class="btn btn-ghost" id="detail">📊 ${TR('VOIR MA PROGRESSION')}</button>
     <button class="btn btn-ghost" id="exshare">📣 ${TR('PARTAGER MA SAISON')}</button>
     ${modeSwitchBtn()}
-    ${pr?`<button class="btn btn-ghost" id="stop">🎾 ${TR('RACCROCHER LA RAQUETTE')}</button>`:''}`;
+    ${pr?`<button class="btn btn-ghost" id="stop">🎾 ${TR('RACCROCHER LA RAQUETTE')}</button>`:''}
+    ${partenaireHtml()}`;
   fullScreen(h);
   setSurface('');
   wireModeSwitch();
+  brancherPartenaire();
 
   // id distinct de celui du match : le bouton « CONTINUER » de l'écran de match reste
   // dans le DOM, et comme sc-match précède sc-full, getElementById('next') tombait sur
@@ -1303,6 +1350,7 @@ function davisScreen(){
 
 function drawScreen(){
   const c = G.c, st = c.tour, t = st.t, tier = TIERS[t.tier];
+  if (window.Stats) Stats.voir('tableau');
   const opp = Career.myOpponent(c);
 
   setSurface(t.surf);
@@ -1503,6 +1551,7 @@ function scoutHtml(sc){
 
 /* ══════════════════ MATCH ══════════════════ */
 function startMatch(opp, isDavis){
+  if (window.Stats){ Stats.premierMatch(); Stats.voir('match'); }
   const c = G.c, st = c.tour, t = st.t;
   G.davisMatch = !!isDavis;
   const seed = Career.seedOf(st, opp);
@@ -1813,10 +1862,28 @@ function endCareer(){
         <div class="bd">${b.desc}</div></div>`; }).join('')}</div>`:''}
     <button class="btn btn-primary" id="share">📣 ${TR('PARTAGER CETTE CARRIÈRE')}</button>
     <button class="btn btn-ghost" id="again">${TR('NOUVELLE CARRIÈRE')}</button>
-    <button class="btn btn-ghost" id="hm">${TR('MENU PRINCIPAL')}</button>`);
+    <button class="btn btn-ghost" id="hm">${TR('MENU PRINCIPAL')}</button>
+    ${partenaireHtml()}`);
+  brancherPartenaire();
   $('share').onclick = () => shareScreen(c, endCareer);
   $('again').onclick = pickNation;
   $('hm').onclick = home;
+}
+
+/* ══════════════════ PARTENAIRE ══════════════════
+   Le même bloc que sur l'accueil, réutilisable sur les écrans où passent les
+   joueurs engagés (bilan de saison, fin de carrière). Toujours identifié comme
+   publicité, toujours avec la mention 18+ : c'est ce qui vous protège. */
+function partenaireHtml(){
+  const src = document.querySelector('#sc-home .pt-bloc');
+  if (!src) return '';
+  return '<aside class="pt-bloc pt-encart" aria-label="Notre partenaire">' + src.innerHTML + '</aside>';
+}
+function brancherPartenaire(){
+  document.querySelectorAll('#full-body .pt-lien').forEach(a => {
+    a.addEventListener('click', () => { if (window.Stats) Stats.evt('sponsor_clic', 'encart'); });
+  });
+  if (window.Stats) Stats.evt('sponsor_vu', 'encart');
 }
 
 /* ══════════════════ PARTAGE ══════════════════

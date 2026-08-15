@@ -32,6 +32,8 @@ let debut = 0;             // horodatage du début de session de jeu
 let secondes = 0;          // temps de jeu cumulé sur cette partie
 let actions = 0;           // nombre d'interactions, pour distinguer un vrai essai d'un survol
 let dernierPing = 0;
+let ecran = '';            // dernier ecran vu — c'est lui qui dira OU les gens partent
+let matchJoue = 0;         // premier match joue a la main : le vrai contact avec le moteur
 
 function envoi(route, corps, urgent){
   if (!ACTIF) return;
@@ -101,9 +103,19 @@ function pouls(c, statut){
     secondes: Math.round(secondes), actions,
     an: (c.world && c.world.year) || null, sem: (c.world && c.world.week) || null,
     age: me.age || null,
+    ecran, matchJoue,
     statut: statut || null
   }, !!statut);
 }
+
+/* L'ecran courant, pousse au serveur seulement quand il change. */
+function voir(nom){
+  if (!nom || nom === ecran) return;
+  ecran = String(nom).slice(0, 40);
+  if (partie) envoi('/api/partie', { id: partie, ecran, matchJoue });
+  else evt('ecran', ecran);          // avant la partie : c'est le tunnel de creation
+}
+function premierMatch(){ if (!matchJoue){ matchJoue = 1; if (partie) envoi('/api/partie', { id: partie, matchJoue }); } }
 
 function finPartie(c, comment){ pouls(c, comment || 'terminée'); partie = null; }
 
@@ -130,7 +142,7 @@ addEventListener('visibilitychange', () => {
 });
 
 return { id, get pseudo(){ return pseudo; }, bonjour, nouvellePartie, pouls, finPartie,
-         evt, sponsorVu, actif: ACTIF };
+         evt, sponsorVu, voir, premierMatch, actif: ACTIF };
 })();
 
 /* Un const de script ne s'attache pas à window : sans cette ligne, toutes les

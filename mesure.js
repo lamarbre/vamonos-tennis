@@ -63,8 +63,23 @@ if (rep === 'oui') charger();
 else if (rep !== 'non'){
   // On laisse la page s'afficher d'abord : le bandeau ne doit pas être
   // la première chose que voit quelqu'un qui découvre le jeu.
+  // On attend que la page soit posée, et jamais pendant un match : le bandeau
+  // ne doit pas se glisser entre le joueur et son premier point décisif.
+  const quand = () => {
+    const enMatch = document.querySelector('#sc-match.active');
+    if (enMatch){ setTimeout(quand, 4000); return; }
+    bandeau();
+    /* Et s'il apparaît puis qu'un match commence, on le range : il reviendra. */
+    const obs = new MutationObserver(() => {
+      const b = document.getElementById('consent');
+      const dansMatch = document.querySelector('#sc-match.active');
+      if (b && dansMatch){ b.style.display = 'none'; }
+      else if (b && !dansMatch){ b.style.display = ''; }
+    });
+    obs.observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+  };
   if (document.readyState === 'loading')
-    addEventListener('DOMContentLoaded', () => setTimeout(bandeau, 1200));
-  else setTimeout(bandeau, 1200);
+    addEventListener('DOMContentLoaded', () => setTimeout(quand, 1500));
+  else setTimeout(quand, 1500);
 }
 })();

@@ -100,5 +100,16 @@ window.__DICO = Object.assign(window.__DICO || {}, {
 "COPIER LE TEXTE":"COPIAR TEXTO",
 "TÉLÉCHARGER L'IMAGE":"DESCARGAR IMAGEN",
 "ENVOYER VERS":"ENVIAR A",
+/* ── départ rapide ── */
+"DÉPART RAPIDE":"INICIO RÁPIDO",
+"Le jeu tire un joueur pour vous et lance une saison express. Vous jouez dans dix secondes.":"El juego crea un jugador por ti y lanza una temporada exprés. Juegas en diez segundos.",
+"CRÉER MON JOUEUR MOI-MÊME":"CREAR MI PROPIO JUGADOR",
+"VOTRE JOUEUR":"TU JUGADOR",
+"Talent":"Talento",
+"Plan":"Plan",
+"Travail":"Entreno",
+"Le circuit va dérouler votre première saison. Vous reprendrez la main sur les matchs qui comptent — et vous pourrez tout régler ensuite, du plan à l'équipe.":"El circuito jugará tu primera temporada. Tomarás el mando en los partidos que importan — y podrás ajustarlo todo después, del plan al equipo.",
+"C'EST PARTI":"VAMOS",
+"Je préfère choisir mon plan":"Prefiero elegir mi plan",
 "APERÇU DE L'IMAGE":"VISTA PREVIA"
 });

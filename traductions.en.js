@@ -100,5 +100,16 @@ window.__DICO = Object.assign(window.__DICO || {}, {
 "COPIER LE TEXTE":"COPY TEXT",
 "TÉLÉCHARGER L'IMAGE":"DOWNLOAD IMAGE",
 "ENVOYER VERS":"SEND TO",
+/* ── départ rapide ── */
+"DÉPART RAPIDE":"QUICK START",
+"Le jeu tire un joueur pour vous et lance une saison express. Vous jouez dans dix secondes.":"The game rolls a player for you and starts an express season. You'll be playing in ten seconds.",
+"CRÉER MON JOUEUR MOI-MÊME":"CREATE MY OWN PLAYER",
+"VOTRE JOUEUR":"YOUR PLAYER",
+"Talent":"Talent",
+"Plan":"Plan",
+"Travail":"Training",
+"Le circuit va dérouler votre première saison. Vous reprendrez la main sur les matchs qui comptent — et vous pourrez tout régler ensuite, du plan à l'équipe.":"The tour will run your first season. You'll take over for the matches that matter — and you can adjust everything afterwards, from the plan to your team.",
+"C'EST PARTI":"LET'S GO",
+"Je préfère choisir mon plan":"I'd rather pick my plan",
 "APERÇU DE L'IMAGE":"IMAGE PREVIEW"
 });

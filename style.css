@@ -608,3 +608,14 @@ body[data-surf] .mh-top{ letter-spacing:.16em; }
   background:var(--bg2); color:var(--txt3); border:1px solid var(--line);
 }
 .langs button.actif{ color:#08160F; background:var(--marque-clair); border-color:var(--marque-clair); }
+
+/* L'encart partenaire hors accueil : plus compact, même identité. */
+.pt-encart{ margin-top:26px; }
+.pt-encart .pt-txt{ font-size:11.5px; }
+
+/* Sur téléphone, le bandeau vient d'en HAUT : en bas il recouvrait les commandes
+   du match — un joueur arrivant à son premier point décisif ne pouvait pas jouer. */
+@media (max-width: 640px){
+  #consent{ top:10px; bottom:auto; }
+  @keyframes consent-in{ from{ opacity:0; transform:translateY(-14px) } to{ opacity:1; transform:none } }
+}

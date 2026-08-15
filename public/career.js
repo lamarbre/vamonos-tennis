@@ -1118,6 +1118,12 @@ function isBigMatch(c, st){
   if (st.davis) return st.stage === 'final';
   if (st.phase !== 'main') return false;
   const left = st.rounds - st.myRoundsWon, tier = st.t.tier, r = c.me.rank || 999;
+  /* Première saison, aucun match encore joué à la main : le tout premier match
+     du tableau principal devient un match clé, quel que soit le tournoi. Un débutant à #800
+     n'atteignait aucune finale et pouvait finir sa saison sans jamais toucher au
+     moteur — c'est là que 43 % des abandons se produisaient. Il faut qu'il joue. */
+  const ex = c.express;
+  if (ex && !ex.premierJoue && (c.seasons || []).length === 0) return true;
   if (tier === 'slam')     return left <= 3;   // quart, demie, finale
   if (tier === 'olympics') return left <= 2;
   if (tier === 'finals')   return left <= 2;
@@ -1342,7 +1348,7 @@ function expressLine(c, st){
 function expressResolveKey(c, won){
   const st = c.tour;
   if (!st) return;
-  if (c.express) c.express.keyCount = (c.express.keyCount || 0) + 1;
+  if (c.express){ c.express.keyCount = (c.express.keyCount || 0) + 1; c.express.premierJoue = true; }
   if (st.davis) resolveDavisTie(c, won); else resolveRound(c, won);
 }
 
